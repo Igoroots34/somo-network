@@ -78,7 +78,7 @@ class ConnectionManager:
             
             await self.send_personal_message(player.id, event_dict)
     
-    def _create_public_room_state(self, room: RoomState ) -> Public:
+    def _create_public_room_state(self, room: RoomState ) -> PublicRoomState:
         """Cria uma versão pública da sala sem revelar informações privadas"""
         public_players = []
         for player in room.players:
@@ -92,7 +92,7 @@ class ConnectionManager:
             )
             public_players.append(public_player)
         
-        return Public(
+        return PublicRoomState(
             id=room.id,
             players=public_players,
             max_players=room.max_players,
