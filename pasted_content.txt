@@ -47,7 +47,7 @@ somo/
 Visão Geral: Jogo de cartas rápido e estratégico para 2 a 8 jogadores. Todos competem para manter tokens e manipular o fluxo com cartas especiais.
 Objetivo: Ser o último jogador com pelo menos 1 token.
 
-Componentes (baralho inicial):
+Componentes (baralho inicial do somo):
 
 60 cartas numéricas: 6 cópias de cada 0–9
 
