@@ -14,7 +14,7 @@ pp = FastAPI()
 
 origins = [
     "http://localhost:3000",  # Para desenvolvimento local
-    "https://YOUR_VERCEL_FRONTEND_URL", # Substitua pela URL do seu frontend Vercel
+    "https://somo-network.vercel.app/", # Substitua pela URL do seu frontend Vercel
     # Adicione outros domínios se necessário
 ]
 
