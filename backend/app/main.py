@@ -14,7 +14,8 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",  # Para desenvolvimento local
-    "https://somo-network.vercel.app", # URL do seu frontend Vercel
+    "https://somo-network.vercel.app/", # Substitua pela URL do seu frontend Vercel
+    # Adicione outros domínios se necessário
 ]
 
 app.add_middleware(
@@ -23,8 +24,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
- )
-
+)
 
 @app.on_event("startup")
 async def startup_event():
