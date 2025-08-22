@@ -10,16 +10,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="SOMO: Network Blackout API",
-    description="Backend para o card game SOMO: Network Blackout",
-    version="1.0.0"
-)
+pp = FastAPI()
 
-# Configuração CORS para permitir acesso do frontend
+origins = [
+    "http://localhost:3000",  # Para desenvolvimento local
+    "https://YOUR_VERCEL_FRONTEND_URL", # Substitua pela URL do seu frontend Vercel
+    # Adicione outros domínios se necessário
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, especificar domínios específicos
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
