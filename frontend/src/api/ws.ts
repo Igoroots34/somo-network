@@ -129,7 +129,7 @@ export class WebSocketClient {
 }
 
 // Instância singleton do cliente WebSocket
-const WS_URL = (process.env.WS_URL as string) || 'ws://localhost:8000/ws';
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
 export const wsClient = new WebSocketClient(WS_URL);
 
 // Funções de conveniência para ações comuns
