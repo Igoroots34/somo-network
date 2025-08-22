@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3000,
   },
   define: {
-    'process.env.WS_URL': JSON.stringify(process.env.WS_URL || 'ws://localhost:8000/ws'),
+    'process.env.WS_URL': JSON.stringify(process.env.WS_URL || 'ws://somo-network-backend.onrender.com/ws'),
   }
 })
 
