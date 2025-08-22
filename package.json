@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "fastapi": "^0.0.8",
-    "pydantic": "^0.0.1-security",
-    "uvicorn": "^0.0.1-security",
-    "websockets": "^0.2.0"
-  }
-}
