@@ -43,7 +43,7 @@ class RoomManager:
             if room_id not in self.rooms:
                 return room_id
     
-        def create_room(self, host_nickname: str, max_players: int = 8, host_player_id: Optional[str] = None) -> RoomState:
+    def create_room(self, host_nickname: str, max_players: int = 8, host_player_id: Optional[str] = None) -> RoomState:
         """Cria uma nova sala"""
         room_id = self.generate_room_id()
         
