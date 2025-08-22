@@ -1,0 +1,276 @@
+Quero que você gere um projeto full-stack jogável online do card game SOMO: Network Blackout usando React no frontend e Python no backend, com comunicação WebSocket em tempo real. Faça tudo pronto para rodar localmente e fácil de publicar depois. Especificações completas abaixo — siga à risca.
+
+1) Tech stack & estrutura
+
+Frontend: React + Vite (TypeScript), Zustand (ou Context) para estado local, WebSocket nativo para tempo real. UI simples e responsiva (Tailwind opcional).
+
+Backend: Python + FastAPI com endpoints REST mínimos e WebSocket para eventos do jogo. Use Pydantic para schemas. Gerencie salas e estado do jogo em memória (com uma camada opcional pronta para trocar por Redis).
+
+Pasta do projeto (monorepo):
+
+somo/
+  backend/
+    app/
+      main.py
+      ws.py              # handlers de websocket
+      models.py          # Pydantic: cartas, ações, estado
+      engine/
+        __init__.py
+        rules.py         # regras e validações
+        state.py         # RoomState, PlayerState, GameState
+        deck.py          # baralho e compras
+        bots.py          # interface e bot dummy
+      services/
+        room_manager.py  # cria/junta salas, GC simples
+    tests/
+      test_engine.py
+    requirements.txt
+  frontend/
+    index.html
+    src/
+      main.tsx
+      App.tsx
+      api/ws.ts          # cliente WebSocket
+      store/game.ts      # estado cliente
+      views/Lobby.tsx
+      views/Room.tsx
+      components/Hand.tsx
+      components/Table.tsx
+      components/Players.tsx
+      components/RoundBanner.tsx
+      types.ts
+    vite.config.ts
+  README.md
+
+2) Regras oficiais do jogo (implemente exatamente)
+
+Visão Geral: Jogo de cartas rápido e estratégico para 2 a 8 jogadores. Todos competem para manter tokens e manipular o fluxo com cartas especiais.
+Objetivo: Ser o último jogador com pelo menos 1 token.
+
+Componentes (baralho inicial):
+
+60 cartas numéricas: 6 cópias de cada 0–9
+
+6 Reverse
+
+6 x2 (Multiplica por 2)
+
+7 +2 (Soma +2)
+
+7 =0 (Zera)
+
+4 Joker (Coringa)
+
+1 dado D20
+
+24 tokens
+
+Preparação:
+
+Embaralhe todas as cartas em um único monte de compra.
+
+Cada jogador recebe 7 cartas e 3 tokens.
+
+Defina aleatoriamente o primeiro jogador. Sentido inicial: horário.
+
+Fluxo da PARTIDA:
+
+A partida é composta por rodadas.
+
+Início da rodada: rolar 1x o D20 ⇒ roundLimit L. Zere accumulatedSum S = 0. Limpe pendingEffect = none.
+
+Turnos seguem o sentido atual.
+
+Em cada turno, o jogador deve:
+
+Jogar uma carta válida da mão.
+
+Numéricas (0–9): definem v = valorEscolhido (para Joker o usuário escolhe 0–9).
+Se existir pendingEffect, aplique primeiro multiplicador (x2), depois aditivo (+2) sobre o valor da carta do próximo (ou seja, o efeito pendente só impacta a carta do próximo jogador quando ele jogar um número).
+Para validar a jogada do jogador atual: somente o valor da carta numérica jogada por ele conta para S. Cartas especiais não somam em S no turno em que são jogadas (exceto =0 que zera S imediatamente).
+
+=0: zera S imediatamente. pendingEffect permanece até que um número seja jogado ou a rodada reinicie.
+
++2 e x2: não alteram S no ato; apenas definem pendingEffect para o próximo jogador numérico.
+
+Reverse: inverte o sentido. Regra especial: se havia pendingEffect ativo de uma carta especial jogada no turno anterior, após o Reverse o “próximo” passa a ser quem jogou a especial — logo o efeito reverte para esse jogador (conforme regra: se alguém joga +2 e o próximo joga Reverse, o +2 volta para quem jogou a especial).
+
+Validação de limite: Uma carta numérica só pode ser jogada se S + valorDaCarta não ultrapassar L (o efeito pendente nunca se aplica no turno atual; só no próximo número).
+
+Atualizar S: Se jogou número, faça S = S + valorDaCarta (sem efeitos, pois eles só se aplicam no próximo número).
+
+Encerrar turno: passa ao próximo conforme o sentido.
+
+Punição (estouro / impossibilidade):
+
+A rodada segue até que alguém não consiga jogar uma carta válida (qualquer jogada que resultaria em S + número > L e ele não tenha especiais aplicáveis) ou alguém ultrapasse o limite (se você optar por aceitar a jogada e detectar estouro).
+
+Nesse caso, o jogador punido perde 1 token e todos os jogadores compram 2 cartas.
+
+Reinicie a rodada (rolar D20, S=0, pendingEffect=none).
+
+Acerto exato:
+
+Se um jogador jogar um número e S == L exatamente, ele compra +2 cartas (apenas ele).
+
+Reinicie a rodada (rolar D20, S=0, pendingEffect=none). Ninguém mais compra.
+
+Eliminação e fim de jogo:
+
+Quem perder todos os tokens é eliminado.
+
+Vence quem permanecer com tokens quando os demais forem eliminados. Não há empate.
+
+Observações importantes:
+
+Cartas especiais afetam só o próximo jogador (salvo o caso do Reverse que pode devolver o efeito).
+
+Joker é tratado como carta numérica do valor escolhido no momento da jogada.
+
+Efeitos pendentes expiram assim que um número é jogado ou quando a rodada reinicia.
+
+3) Modelos, ações e eventos (contrato WebSocket)
+
+Ações (client → server):
+
+create_room {nickname, maxPlayers}
+
+join_room {roomId, nickname}
+
+start_game {roomId}
+
+play_card {roomId, cardId, asValue?} // asValue só para Joker (0–9)
+
+play_special {roomId, cardId, type} // "+2" | "x2" | "=0" | "Reverse"
+
+pass_turn {roomId} // força punição por impossibilidade
+
+chat {roomId, message}
+
+add_bot {roomId, difficulty} // usa bots.py
+
+Eventos (server → client):
+
+room_state {room} // jogadores, ordem, sentido, mãos (apenas do próprio), baralho, descarte, tokens
+
+round_started {limit} // novo D20
+
+card_played {playerId, card, sum} // mostra S quando numérica
+
+effect_set {type} // +2/x2 pendente
+
+sum_reset {byPlayerId} // =0 usado
+
+direction_changed {clockwise} // Reverse
+
+penalty {playerId, tokensLeft} // quem perdeu token
+
+draw_cards {players: [{id, amount}]} // compras coletivas ou bônus de acerto
+
+round_reset {reason} // "penalty" | "exact_hit"
+
+turn_changed {playerId}
+
+game_over {winnerId}
+
+error {code, message}
+
+Schemas (Pydantic) essenciais:
+
+Card { id: str, kind: "number"|"joker"|"plus2"|"times2"|"reset0"|"reverse", value?: int }
+
+PlayerState { id, nickname, tokens, handCount, isBot } (não envie mãos dos outros)
+
+ClientSeat { selfHand: Card[] }
+
+RoomState { id, players, currentTurn, direction, sum, limit, pendingEffect, deckCount, discardTop }
+
+4) Engine (Python) — implementação
+
+deck.py: gera o baralho nas quantidades exatas e embaralha; util draw(n).
+
+state.py: RoomState, PlayerState; fila de turnos; sentido; util para avançar turno.
+
+rules.py:
+
+start_round() => rola D20, sum=0, limpa efeito.
+
+can_play_number(value, sum, limit) => bool.
+
+apply_number(value) => soma; verifica exato e estouro.
+
+play_special(type) => seta efeito, aplica Reverse, aplica =0.
+
+Lógica de punição e reinício da rodada conforme regras acima.
+
+Efeito pendente: estrutura {multiplier?:2, add?:2, sourcePlayerId}; aplica somente na próxima carta numérica jogada; depois some.
+
+Reverse + efeito pendente: após inverter sentido, próximo jogador passa a ser o jogador que jogou a especial anterior; portanto o efeito bate nele (reversão).
+
+5) Bots (stub pronto)
+
+class BotStrategy:
+def choose_action(state: RoomState, hand: List[Card]) -> Action:
+Comece com um bot Greedy: tenta =0 se estiver alto, caso contrário joga o menor número viável; usa Reverse para devolver efeito pendente perigoso; se não puder jogar, envia pass_turn.
+
+6) Telas do frontend
+
+Lobby: criar sala, entrar por código, ver lista de jogadores e status; botão Start (host).
+
+Sala/Jogo:
+
+Banner da rodada com Limit L e S atual.
+
+Indicador de pendência de efeito (+2/x2) e sentido.
+
+Mão do jogador com ações habilitadas/desabilitadas conforme regras.
+
+Log leve de ações.
+
+Tokens por jogador e destaque no jogador da vez.
+
+Snackbar para exact_hit, penalty, round_reset.
+
+7) Comandos para rodar
+
+Backend:
+
+python -m venv .venv && source .venv/bin/activate (ou Windows equivalente)
+
+pip install -r requirements.txt
+
+uvicorn app.main:app --reload
+
+Frontend:
+
+npm i
+
+npm run dev
+
+Variáveis: WS_URL no frontend apontando para o backend.
+
+8) Testes mínimos
+
+Em tests/test_engine.py:
+
+Montar baralho e garantir contagens.
+
+Simular rodada com exact hit e verificar +2 cartas e round reset.
+
+Simular punição por impossibilidade e verificar token-- e todos +2 cartas.
+
+Testar Reverse devolvendo efeito pendente.
+
+9) Critérios de aceite
+
+Vários clientes no navegador entram na mesma sala e veem estado sincronizado.
+
+Fluxo completo de rodadas com D20, sum acumulado, exato e punição.
+
+Efeito pendente aplicado corretamente ao próximo número; Reverse pode devolver o efeito.
+
+Eliminação por tokens e game_over disparado.
+
+Bot Greedy funcional via add_bot.
+
+Gere TODO o código com essa estrutura e explique no README como rodar.

@@ -1,0 +1,147 @@
+import React, { useState } from 'react';
+import { useGameStore } from '../store/game';
+
+const Lobby: React.FC = () => {
+  const { connected, createRoom, joinRoom, nickname, setNickname, roomId, setRoomId } = useGameStore();
+  
+  const [activeTab, setActiveTab] = useState<'create' | 'join'>('create');
+  const [maxPlayers, setMaxPlayers] = useState(4);
+
+  const handleCreateRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (nickname.trim() && connected) {
+      createRoom(nickname.trim(), maxPlayers);
+    }
+  };
+
+  const handleJoinRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (nickname.trim() && roomId.trim() && connected) {
+      joinRoom(roomId.trim().toUpperCase(), nickname.trim());
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto">
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
+        {/* Tabs */}
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
+              activeTab === 'create'
+                ? 'bg-white/20 text-white'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            Criar Sala
+          </button>
+          <button
+            onClick={() => setActiveTab('join')}
+            className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
+              activeTab === 'join'
+                ? 'bg-white/20 text-white'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            Entrar na Sala
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* Campo de nickname (comum para ambas as abas) */}
+          <div className="mb-6">
+            <label htmlFor="nickname" className="block text-sm font-medium text-white mb-2">
+              Seu Nickname
+            </label>
+            <input
+              type="text"
+              id="nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Digite seu nickname"
+              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              maxLength={20}
+              required
+            />
+          </div>
+
+          {activeTab === 'create' ? (
+            <form onSubmit={handleCreateRoom} className="space-y-4">
+              <div>
+                <label htmlFor="maxPlayers" className="block text-sm font-medium text-white mb-2">
+                  Máximo de Jogadores
+                </label>
+                <select
+                  id="maxPlayers"
+                  value={maxPlayers}
+                  onChange={(e) => setMaxPlayers(Number(e.target.value))}
+                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                >
+                  <option value={2} className="text-black">2 jogadores</option>
+                  <option value={3} className="text-black">3 jogadores</option>
+                  <option value={4} className="text-black">4 jogadores</option>
+                  <option value={5} className="text-black">5 jogadores</option>
+                  <option value={6} className="text-black">6 jogadores</option>
+                  <option value={7} className="text-black">7 jogadores</option>
+                  <option value={8} className="text-black">8 jogadores</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={!connected || !nickname.trim()}
+                className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {connected ? 'Criar Sala' : 'Conectando...'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleJoinRoom} className="space-y-4">
+              <div>
+                <label htmlFor="roomId" className="block text-sm font-medium text-white mb-2">
+                  Código da Sala
+                </label>
+                <input
+                  type="text"
+                  id="roomId"
+                  value={roomId}
+                  onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                  placeholder="Ex: ABC123"
+                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent uppercase"
+                  maxLength={10}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!connected || !nickname.trim() || !roomId.trim()}
+                className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {connected ? 'Entrar na Sala' : 'Conectando...'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* Instruções do jogo */}
+      <div className="mt-8 bg-white/10 backdrop-blur-md rounded-2xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Como Jogar</h3>
+        <div className="space-y-2 text-sm text-white/80">
+          <p>• O objetivo é não ser eliminado perdendo todos os tokens</p>
+          <p>• Cada jogador começa com 3 tokens</p>
+          <p>• Jogue cartas sem exceder o limite da rodada</p>
+          <p>• Cartas especiais: +2, x2, =0, Reverse</p>
+          <p>• Acerte o limite exato para comprar +2 cartas</p>
+          <p>• Exceder o limite = perder 1 token</p>
+          <p>• Último jogador com tokens vence!</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Lobby;
+
