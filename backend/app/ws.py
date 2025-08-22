@@ -161,7 +161,7 @@ class ConnectionManager:
                 "message": "Internal server error"
             }))
     
-        async def _handle_create_room(self, player_id: str, data: dict):
+    async def _handle_create_room(self, player_id: str, data: dict):
         """Cria uma nova sala"""
         try:
             action = CreateRoomAction(**data)
