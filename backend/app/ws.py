@@ -161,21 +161,13 @@ class ConnectionManager:
                 "message": "Internal server error"
             }))
     
-    async def _handle_create_room(self, player_id: str, data: dict):
+        async def _handle_create_room(self, player_id: str, data: dict):
         """Cria uma nova sala"""
         try:
             action = CreateRoomAction(**data)
-            room = room_manager.create_room(action.nickname, action.max_players)
-            
-            # Atualiza o player_id no mapeamento
-            old_host_id = room.host_id
-            room.host_id = player_id
-            room.players[0].id = player_id
-            
-            # Atualiza os mapeamentos
-            if old_host_id in room_manager.player_to_room:
-                del room_manager.player_to_room[old_host_id]
-            room_manager.player_to_room[player_id] = room.id
+            # O room_manager.create_room já deve lidar com a criação do host_id e player_id
+            # e associá-los corretamente. Não precisamos reatribuir aqui.
+            room = room_manager.create_room(action.nickname, action.max_players, player_id) # Passa o player_id do WebSocket
             
             await self.broadcast_room_state(room.id)
             
@@ -185,6 +177,7 @@ class ConnectionManager:
                 "code": "CREATE_ROOM_ERROR",
                 "message": str(e)
             })
+
     
     async def _handle_join_room(self, player_id: str, data: dict):
         """Entra em uma sala existente"""

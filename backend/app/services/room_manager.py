@@ -43,10 +43,12 @@ class RoomManager:
             if room_id not in self.rooms:
                 return room_id
     
-    def create_room(self, host_nickname: str, max_players: int = 8) -> RoomState:
+        def create_room(self, host_nickname: str, max_players: int = 8, host_player_id: Optional[str] = None) -> RoomState:
         """Cria uma nova sala"""
         room_id = self.generate_room_id()
-        host_id = str(uuid.uuid4())
+        
+        # Usa o host_player_id fornecido ou gera um novo
+        host_id = host_player_id if host_player_id else str(uuid.uuid4())
         
         host_player = PlayerState(
             id=host_id,
@@ -68,6 +70,7 @@ class RoomManager:
         self.room_last_activity[room_id] = time.time()
         
         return room
+
     
     def join_room(self, room_id: str, nickname: str) -> Optional[PlayerState]:
         """Adiciona um jogador a uma sala existente"""
