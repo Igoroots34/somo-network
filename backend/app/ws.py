@@ -78,7 +78,7 @@ class ConnectionManager:
             
             await self.send_personal_message(player.id, event_dict)
     
-    def _create_public_room_state(self, room: ) -> Public:
+    def _create_public_room_state(self, room ) -> Public:
         """Cria uma versão pública da sala sem revelar informações privadas"""
         public_players = []
         for player in room.players:
