@@ -433,7 +433,7 @@ class ConnectionManager:
                 "message": str(e)
             })
     
-    async def _handle_game_events(self, room: , events: list):
+    async def _handle_game_events(self, room , events: list):
         """Processa eventos do jogo e os envia para os clientes"""
         for event in events:
             await self.broadcast_to_room(room.id, event)
@@ -447,7 +447,7 @@ class ConnectionManager:
             if current_player and current_player.is_bot:
                 await self._process_bot_turn(room, current_player)
     
-    async def _process_bot_turn(self, room: , bot_player: PlayerState):
+    async def _process_bot_turn(self, room , bot_player: PlayerState):
         """Processa o turno de um bot"""
         await asyncio.sleep(1)  # Pequeno delay para simular "pensamento"
         
