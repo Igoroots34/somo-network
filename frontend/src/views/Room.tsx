@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGameStore, useIsMyTurn, useIsHost, useCurrentPlayer } from '../store/game';
+import { useGameStore, useIsMyTurn, useIsHost } from '../store/game';
 import { Card } from '../types';
 
 // Componente para renderizar uma carta
@@ -113,7 +113,6 @@ const Room: React.FC = () => {
 
   const isMyTurn = useIsMyTurn();
   const isHost = useIsHost();
-  const currentPlayer = useCurrentPlayer();
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [jokerValue, setJokerValue] = useState<number>(0);

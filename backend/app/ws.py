@@ -67,7 +67,7 @@ class ConnectionManager:
             # Cria uma versão pública da sala (sem revelar mãos dos outros)
             public_room = self._create_public_room_state(room)
             
-            event = RoomStateEvent(
+            event = Event(
                 room=room,
                 self_hand=player.hand if not player.is_bot else None
             )
@@ -78,7 +78,7 @@ class ConnectionManager:
             
             await self.send_personal_message(player.id, event_dict)
     
-    def _create_public_room_state(self, room: RoomState) -> PublicRoomState:
+    def _create_public_room_state(self, room: ) -> Public:
         """Cria uma versão pública da sala sem revelar informações privadas"""
         public_players = []
         for player in room.players:
@@ -92,7 +92,7 @@ class ConnectionManager:
             )
             public_players.append(public_player)
         
-        return PublicRoomState(
+        return Public(
             id=room.id,
             players=public_players,
             max_players=room.max_players,
@@ -433,7 +433,7 @@ class ConnectionManager:
                 "message": str(e)
             })
     
-    async def _handle_game_events(self, room: RoomState, events: list):
+    async def _handle_game_events(self, room: , events: list):
         """Processa eventos do jogo e os envia para os clientes"""
         for event in events:
             await self.broadcast_to_room(room.id, event)
@@ -447,7 +447,7 @@ class ConnectionManager:
             if current_player and current_player.is_bot:
                 await self._process_bot_turn(room, current_player)
     
-    async def _process_bot_turn(self, room: RoomState, bot_player: PlayerState):
+    async def _process_bot_turn(self, room: , bot_player: PlayerState):
         """Processa o turno de um bot"""
         await asyncio.sleep(1)  # Pequeno delay para simular "pensamento"
         

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GameState, ServerEvent, Card, ChatMessage, Notification, RoomState } from '../types';
+import { GameState, ServerEvent, ChatMessage, Notification } from '../types';
 import { wsClient, gameActions } from '../api/ws';
 
 interface GameStore extends GameState {
