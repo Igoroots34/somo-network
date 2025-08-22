@@ -86,8 +86,8 @@ class AddBotAction(BaseModel):
     difficulty: Literal["easy", "medium", "hard"] = "easy"
 
 class Event(BaseModel):
-    room: RoomState          # o estado bruto da sala
-    self_hand: Optional[List[CardState]] = None
+    room: RoomState
+    self_hand: Optional[List[Card]] = None
 
 # Eventos do servidor para o cliente
 class RoomStateEvent(BaseModel):
