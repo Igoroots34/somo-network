@@ -1,65 +1,68 @@
 import React, { useState } from 'react';
 import { useGameStore, useIsMyTurn, useIsHost } from '../store/game';
 import { Card } from '../types';
+import jokerImg from '../assets/cards/joker.png';
+import plus2Img from '../assets/cards/plus2.png';
+import times2Img from '../assets/cards/times2.png';
+import reset0Img from '../assets/cards/reset0.png';
+import reverseImg from '../assets/cards/reverse.png';
+import defaultImg from '../assets/cards/default.png';
 import { CircleArrowUp, CircleArrowDown, CircleX, Bot } from 'lucide-react';
 
+const numberImages: Record<number, string> = {
+  0: require('../assets/cards/0.png'),
+  1: require('../assets/cards/1.png'),
+  2: require('../assets/cards/2.png'),
+  3: require('../assets/cards/3.png'),
+  4: require('../assets/cards/4.png'),
+  5: require('../assets/cards/5.png'),
+  6: require('../assets/cards/6.png'),
+  7: require('../assets/cards/7.png'),
+  8: require('../assets/cards/8.png'),
+  9: require('../assets/cards/9.png')
+  // … continue para todos os números válidos
+};
+
 // Componente para renderizar uma carta
+function getCardImage(card: Card): string {
+  switch (card.kind) {
+    case 'number':
+      return numberImages[card.value ?? 0];
+    case 'joker':
+      return jokerImg;
+    case 'plus2':
+      return plus2Img;
+    case 'times2':
+      return times2Img;
+    case 'reset0':
+      return reset0Img;
+    case 'reverse':
+      return reverseImg;
+    default:
+      return defaultImg;
+  }
+}
+
 const CardComponent: React.FC<{
   card: Card;
   onClick?: () => void;
   disabled?: boolean;
   small?: boolean;
 }> = ({ card, onClick, disabled = false, small = false }) => {
-  const getCardColor = () => {
-    switch (card.kind) {
-      case 'number':
-        return 'bg-blue-500';
-      case 'joker':
-        return 'bg-purple-500';
-      case 'plus2':
-        return 'bg-green-500';
-      case 'times2':
-        return 'bg-orange-500';
-      case 'reset0':
-        return 'bg-red-500';
-      case 'reverse':
-        return 'bg-yellow-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getCardText = () => {
-    switch (card.kind) {
-      case 'number':
-        return card.value?.toString() || '?';
-        case 'joker':
-          // Usa valor apenas se não for null nem undefined; caso contrário exibe 'J'
-          return card.value != null ? card.value.toString() : 'J';
-      case 'plus2':
-        return '+2';
-      case 'times2':
-        return 'x2';
-      case 'reset0':
-        return '=0';
-      case 'reverse':
-        return '⟲';
-      default:
-        return '?';
-    }
-  };
-
-  const sizeClasses = small
-    ? 'w-8 h-12 text-xs'
-    : 'w-16 h-24 text-lg';
+  const imgSrc = getCardImage(card);
+  const sizeClasses = small ? 'w-8 h-12' : 'w-16 h-24';
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${getCardColor()} ${sizeClasses} text-[#FFD700] font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center`}
+      className={`rounded-lg shadow-lg hover:shadow-xl transition-all ${sizeClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      {getCardText()}
+      <img
+        src={imgSrc}
+        alt={`${card.kind} ${card.value ?? ''}`}
+        className="w-full h-full object-contain"
+      />
     </button>
   );
 };
@@ -71,14 +74,12 @@ const PlayerComponent: React.FC<{
   isSelf: boolean;
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
-    <div className={`p-4 ${
-      isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
-    } ${isSelf ? 'bg-black outline outline-[#FFD700]' : ''}`}>
+    <div className={`p-4 ${isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
+      } ${isSelf ? 'bg-black outline outline-[#FFD700]' : ''}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <span className={`flex items-center text-sm font-medium ${
-            player.is_eliminated ? 'text-red-400 line-through' : 'text-[#FFD700]'
-          }`}>
+          <span className={`flex items-center text-sm font-medium ${player.is_eliminated ? 'text-red-400 line-through' : 'text-[#FFD700]'
+            }`}>
             {player.nickname}
             {player.is_bot && <Bot size={18} />}
             {isSelf && ' (Você)'}
@@ -152,7 +153,7 @@ const Room: React.FC = () => {
 
   const canPlayCard = (card: Card): boolean => {
     if (!isMyTurn) return false;
-    
+
     if (card.kind === 'number') {
       return room.accumulated_sum + (card.value || 0) <= room.round_limit;
     } else if (card.kind === 'joker') {
@@ -301,7 +302,7 @@ const Room: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           <div className="flex flex-wrap gap-3 justify-center">
             {selfHand.map((card) => (
               <CardComponent
@@ -325,11 +326,10 @@ const Room: React.FC = () => {
                 <button
                   key={i}
                   onClick={() => setJokerValue(i)}
-                  className={`w-12 h-12 rounded-lg font-bold transition-colors ${
-                    jokerValue === i
+                  className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i
                       ? 'bg-purple-500 text-white'
                       : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                  }`}
+                    }`}
                 >
                   {i}
                 </button>
