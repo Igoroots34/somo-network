@@ -12,11 +12,11 @@ const Notifications: React.FC = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 ${
+          className={`p-4 shadow-lg max-w-sm transform transition-all duration-300 ${
             notification.type === 'success' ? 'bg-[#FFD700] text-black' :
             notification.type === 'error' ? 'bg-red-500 text-white' :
             notification.type === 'warning' ? 'bg-yellow-500 text-black' :
-            'bg-blue-500 text-white'
+            'bg-transparent text-white'
           }`}
         >
           <div className="flex justify-between items-start">
