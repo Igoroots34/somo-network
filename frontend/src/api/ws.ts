@@ -1,5 +1,6 @@
 import { ServerEvent, ClientAction } from '../types';
 
+
 export class WebSocketClient {
   private ws: WebSocket | null = null;
   private url: string;
@@ -198,4 +199,3 @@ export const gameActions = {
     });
   }
 };
-

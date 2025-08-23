@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import asyncio
 import time
 from typing import Dict, Optional, Set
@@ -45,6 +49,7 @@ class RoomManager:
     
     def create_room(self, host_nickname: str, max_players: int = 8, host_player_id: Optional[str] = None) -> RoomState:
         """Cria uma nova sala"""
+        logger.debug(f"Attempting to create room with host_nickname={host_nickname}, max_players={max_players}, host_player_id={host_player_id}")
         room_id = self.generate_room_id()
         
         # Usa o host_player_id fornecido ou gera um novo
@@ -70,61 +75,40 @@ class RoomManager:
         self.room_last_activity[room_id] = time.time()
         
         return room
-
     
-    def join_room(self, room_id: str, nickname: str, player_id: Optional[str] = None) -> Optional[PlayerState]:
-        """Adiciona um jogador a uma sala existente (com suporte a reconexão pelo player_id)."""
+    def join_room(self, room_id: str, nickname: str) -> Optional[PlayerState]:
+        """Adiciona um jogador a uma sala existente"""
         if room_id not in self.rooms:
             return None
-
+        
         room = self.rooms[room_id]
-
-        # Sala cheia?
+        
+        # Verifica se a sala está cheia
         if len(room.players) >= room.max_players:
             return None
-
-        # Jogo já começou?
-        if getattr(room, "game_started", False):
+        
+        # Verifica se o jogo já começou
+        if room.game_started:
             return None
-
-        # Id do jogador (novo ou vindo do cliente)
-        player_id = player_id or str(uuid.uuid4())
-
-        # Se esse player_id já está mapeado em outra sala → rejeita (ou migre se quiser)
-        mapped_room = self.player_to_room.get(player_id)
-        if mapped_room and mapped_room != room_id:
+        
+        # Verifica se o nickname já existe na sala
+        if any(player.nickname == nickname for player in room.players):
             return None
-
-        # RECONEXÃO: o player_id já está nesta sala
-        if mapped_room == room_id:
-            existing = next((p for p in room.players if p.id == player_id), None)
-            if existing:
-                # Atualiza apelido se quiser permitir mudança
-                if nickname and nickname != existing.nickname:
-                    existing.nickname = nickname
-                self.room_last_activity[room_id] = time.monotonic()
-                return existing
-            # Mapeado mas não achou na lista (inconsistência rara) → ajusta abaixo
-
-        # Apelido já existe na sala para OUTRO player?
-        for p in room.players:
-            if p.nickname == nickname and p.id != player_id:
-                return None
-
-        # Cria novo jogador
+        
+        player_id = str(uuid.uuid4())
         player = PlayerState(
             id=player_id,
             nickname=nickname,
             tokens=3,
             hand=[],
-            is_bot=False,
+            is_bot=False
         )
-
+        
         room.players.append(player)
         self.player_to_room[player_id] = room_id
-        self.room_last_activity[room_id] = time.monotonic()
+        self.room_last_activity[room_id] = time.time()
+        
         return player
-
     
     def get_room(self, room_id: str) -> Optional[RoomState]:
         """Retorna uma sala pelo ID"""
@@ -191,4 +175,3 @@ class RoomManager:
 
 # Instância global do gerenciador de salas
 room_manager = RoomManager()
-
