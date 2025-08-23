@@ -67,8 +67,8 @@ class ConnectionManager:
             # Cria uma versão pública da sala (sem revelar mãos dos outros)
             public_room = self._create_public_room_state(room)
             
-            public_event = RoomStateEvent(room=public_room, self_hand=player.hand if not player.is_bot else None)
-            await self.send_personal_message(player.id, public_event.model_dump())
+            event = RoomStateEvent(room=public_room, self_hand=player.hand)
+            await self.send_personal_message(player.id, event.model_dump())
             
     
     def _create_public_room_state(self, room: RoomState ) -> PublicRoomState:
