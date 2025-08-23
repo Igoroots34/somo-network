@@ -23,7 +23,7 @@ const Lobby: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      <div className="bg-yellow-400 border border-2 border-[#292929] backdrop-blur-md shadow-2xl overflow-hidden">
+      <div className="bg-[#FFD700] border border-2 border-[#292929] backdrop-blur-md shadow-2xl overflow-hidden">
         {/* Tabs */}
         <div className="flex">
           <button
@@ -117,7 +117,7 @@ const Lobby: React.FC = () => {
               <button
                 type="submit"
                 disabled={!connected || !nickname.trim() || !roomId.trim()}
-                className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {connected ? 'Entrar na Sala' : 'Conectando...'}
               </button>
@@ -127,9 +127,9 @@ const Lobby: React.FC = () => {
       </div>
 
       {/* Instruções do jogo */}
-      <div className="mt-8 bg-white/10 backdrop-blur-md rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Como Jogar</h3>
-        <div className="space-y-2 text-sm text-white/80">
+      <div className="mt-8 bg-transparent border border-1 border-[#FFD700] p-6">
+        <h3 className="text-lg font-semibold text-[#FFD700] mb-4">Como Jogar</h3>
+        <div className="space-y-2 text-sm text-[#FFD700]/60">
           <p>• O objetivo é não ser eliminado perdendo todos os tokens</p>
           <p>• Cada jogador começa com 3 tokens</p>
           <p>• Jogue cartas sem exceder o limite da rodada</p>

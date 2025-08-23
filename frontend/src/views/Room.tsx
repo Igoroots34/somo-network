@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore, useIsMyTurn, useIsHost } from '../store/game';
 import { Card } from '../types';
+import { CircleArrowUp, CircleArrowDown, CircleX, Bot } from 'lucide-react';
 
 // Componente para renderizar uma carta
 const CardComponent: React.FC<{
@@ -56,7 +57,7 @@ const CardComponent: React.FC<{
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${getCardColor()} ${sizeClasses} rounded-lg text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center`}
+      className={`${getCardColor()} ${sizeClasses} text-[#FFD700] font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center`}
     >
       {getCardText()}
     </button>
@@ -70,16 +71,16 @@ const PlayerComponent: React.FC<{
   isSelf: boolean;
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
-    <div className={`p-4 rounded-lg ${
-      isCurrentTurn ? 'bg-yellow-400/20 border-2 border-yellow-400' : 'bg-white/10'
-    } ${isSelf ? 'border-2 border-purple-400' : ''}`}>
+    <div className={`p-4 ${
+      isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
+    } ${isSelf ? 'bg-black outline outline-[#FFD700]' : ''}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <span className={`text-sm font-medium ${
-            player.is_eliminated ? 'text-red-400 line-through' : 'text-white'
+          <span className={`flex items-center text-sm font-medium ${
+            player.is_eliminated ? 'text-red-400 line-through' : 'text-[#FFD700]'
           }`}>
             {player.nickname}
-            {player.is_bot && ' 🤖'}
+            {player.is_bot && <Bot size={18} />}
             {isSelf && ' (Você)'}
           </span>
         </div>
@@ -175,61 +176,61 @@ const Room: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header da sala */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6">
+      <div className="bg-[#171717] border border-[#FFD700] p-6">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-white">Sala {room.id}</h2>
-            <p className="text-white/70">
+            <h2 className="text-2xl font-bold text-[#FFD700] uppercase">Sala {room.id}</h2>
+            <p className="text-[#FFD700]/60">
               {room.players.length}/{room.max_players} jogadores
             </p>
           </div>
           <div className="flex space-x-2">
             <button
               onClick={toggleChat}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="flex items-center px-4 py-2 bg-tranparent border border-[#FFD700] font-medium uppercase text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
             >
-              Chat {showChat ? '🔽' : '🔼'}
+              Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
             </button>
             <button
               onClick={() => setView('lobby')}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="flex items-center px-4 py-2 bg-tranparent border border-[#FF0000] font-medium uppercase text-[#FF0000] hover:bg-[#FF0000] hover:text-black transition-colors"
             >
-              Sair
+              Sair <CircleX size={18} />
             </button>
           </div>
         </div>
 
         {!room.game_started ? (
           <div className="space-y-4">
-            <div className="flex space-x-2">
+            <div className="flex justify-between">
               {isHost && (
                 <button
                   onClick={startGame}
                   disabled={room.players.length < 2}
-                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-2 bg-tranparent border border-[#0FC406] text-[#0FC406] font-medium uppercase hover:bg-[#0FC406] hover:text-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Iniciar Jogo
                 </button>
               )}
               {isHost && room.players.length < room.max_players && (
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 ">
                   <button
                     onClick={() => addBot('easy')}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-tranparent border border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-black transition-colors"
                   >
-                    + Bot Fácil
+                    Easy <Bot size={18} />
                   </button>
                   <button
                     onClick={() => addBot('medium')}
-                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                    className=" flex items-center justify-center px-4 py-2 bg-tranparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
                   >
-                    + Bot Médio
+                    Medium <Bot size={18} />
                   </button>
                   <button
                     onClick={() => addBot('hard')}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-tranparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
                   >
-                    + Bot Difícil
+                    Hard <Bot size={18} />
                   </button>
                 </div>
               )}
@@ -269,8 +270,8 @@ const Room: React.FC = () => {
       </div>
 
       {/* Lista de jogadores */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Jogadores</h3>
+      <div className="bg-[#171717] border border-[#FFD700] p-6">
+        <h3 className="text-lg font-semibold text-[#FFD700] mb-4">Jogadores</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {room.players.map((player) => (
             <PlayerComponent
@@ -285,9 +286,9 @@ const Room: React.FC = () => {
 
       {/* Cartas do jogador */}
       {room.game_started && selfHand.length > 0 && (
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6">
+        <div className="bg-[#171717] border border-[#FFD700] p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white">Suas Cartas</h3>
+            <h3 className="text-lg font-semibold text-[#FFD700]">Suas Cartas</h3>
             {isMyTurn && (
               <div className="flex space-x-2">
                 <span className="text-green-400 font-medium">Sua vez!</span>
