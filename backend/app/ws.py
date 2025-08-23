@@ -64,11 +64,14 @@ class ConnectionManager:
             return
         
         for player in room.players:
-            # Cria uma versão pública da sala (sem revelar mãos dos outros)
+            # Cria uma versão pública da sala (sem revelar mãos dos outros)            
             public_room = self._create_public_room_state(room)
-            
-            event = RoomStateEvent(room=public_room, self_hand=player.hand)
-            await self.send_personal_message(player.id, event.model_dump())
+
+            await self.send_personal_message(player.id, {
+            "event": "room_state",
+            "room": public_room.model_dump(),
+            "self_hand": [c.model_dump() for c in (player.hand if not player.is_bot else [])]
+            })
             
     
     def _create_public_room_state(self, room: RoomState ) -> PublicRoomState:
