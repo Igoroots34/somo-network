@@ -68,7 +68,7 @@ const App: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
-          <img src="/src/images/Group 1.png" className='max-h-20 mx-auto' alt="Logo" />
+          <img src="/src/images/LOGO_SOMO.png" className='max-h-20 mx-auto' alt="Logo" />
           <p className="text-xl md:text-2xl text-yellow-200">
             Network Blackout
           </p>
