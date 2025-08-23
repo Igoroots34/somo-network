@@ -9,7 +9,10 @@ export default defineConfig({
     port: 3000,
   },
   define: {
-    'process.env.VITE_WS_URL': JSON.stringify(process.env.VITE_WS_URL || 'ws://somo-network-backend.onrender.com/ws'),
-  }
+    // usa VITE_WS_URL do ambiente ou um fallback seguro em produção
+    'import.meta.env.VITE_WS_URL': JSON.stringify(
+      process.env.VITE_WS_URL || 'wss://somo-network-backend.onrender.com/ws'
+    ),
+  },
 })
 
