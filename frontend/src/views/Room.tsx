@@ -7,19 +7,29 @@ import times2Img from '../assets/cards/times2.png';
 import reset0Img from '../assets/cards/reset0.png';
 import reverseImg from '../assets/cards/reverse.png';
 import defaultImg from '../assets/cards/default.png';
+import card0Image from '../assets/cards/0.png';
+import card1Image from '../assets/cards/1.png';
+import card2Image from '../assets/cards/2.png';
+import card3Image from '../assets/cards/3.png';
+import card4Image from '../assets/cards/4.png';
+import card5Image from '../assets/cards/5.png';
+import card6Image from '../assets/cards/6.png';
+import card7Image from '../assets/cards/7.png';
+import card8Image from '../assets/cards/8.png';
+import card9Image from '../assets/cards/9.png';
 import { CircleArrowUp, CircleArrowDown, CircleX, Bot } from 'lucide-react';
 
 const numberImages: Record<number, string> = {
-  0: require('../assets/cards/0.png'),
-  1: require('../assets/cards/1.png'),
-  2: require('../assets/cards/2.png'),
-  3: require('../assets/cards/3.png'),
-  4: require('../assets/cards/4.png'),
-  5: require('../assets/cards/5.png'),
-  6: require('../assets/cards/6.png'),
-  7: require('../assets/cards/7.png'),
-  8: require('../assets/cards/8.png'),
-  9: require('../assets/cards/9.png')
+  0: card0Image,
+  1: card1Image,
+  2: card2Image,
+  3: card3Image,
+  4: card4Image,
+  5: card5Image,
+  6: card6Image,
+  7: card7Image,
+  8: card8Image,
+  9: card9Image
   // … continue para todos os números válidos
 };
 
