@@ -23,15 +23,15 @@ const Lobby: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
+      <div className="bg-yellow-400 border border-2 border-[#292929] backdrop-blur-md shadow-2xl overflow-hidden">
         {/* Tabs */}
         <div className="flex">
           <button
             onClick={() => setActiveTab('create')}
             className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
               activeTab === 'create'
-                ? 'bg-white/20 text-white'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
+                ? 'bg-black text-[#FFD700]'
+                : 'text-black/30 hover:text-black hover:bg-black/10'
             }`}
           >
             Criar Sala
@@ -40,8 +40,8 @@ const Lobby: React.FC = () => {
             onClick={() => setActiveTab('join')}
             className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
               activeTab === 'join'
-                ? 'bg-white/20 text-white'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
+                ? 'bg-black text-[#FFD700]'
+                : 'text-black/30 hover:text-black hover:bg-black/10'
             }`}
           >
             Entrar na Sala
@@ -51,7 +51,7 @@ const Lobby: React.FC = () => {
         <div className="p-6">
           {/* Campo de nickname (comum para ambas as abas) */}
           <div className="mb-6">
-            <label htmlFor="nickname" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="nickname" className="block text-sm font-medium text-black mb-2">
               Seu Nickname
             </label>
             <input
@@ -60,7 +60,7 @@ const Lobby: React.FC = () => {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="Digite seu nickname"
-              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               maxLength={20}
               required
             />
@@ -69,16 +69,16 @@ const Lobby: React.FC = () => {
           {activeTab === 'create' ? (
             <form onSubmit={handleCreateRoom} className="space-y-4">
               <div>
-                <label htmlFor="maxPlayers" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="maxPlayers" className="block text-sm font-medium text-black mb-2">
                   Máximo de Jogadores
                 </label>
                 <select
                   id="maxPlayers"
                   value={maxPlayers}
                   onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                  className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 >
-                  <option value={2} className="text-black">2 jogadores</option>
+                  <option value={2} className="text-black ">2 jogadores</option>
                   <option value={3} className="text-black">3 jogadores</option>
                   <option value={4} className="text-black">4 jogadores</option>
                   <option value={5} className="text-black">5 jogadores</option>
@@ -91,7 +91,7 @@ const Lobby: React.FC = () => {
               <button
                 type="submit"
                 disabled={!connected || !nickname.trim()}
-                className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full my-4 py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {connected ? 'Criar Sala' : 'Conectando...'}
               </button>
@@ -99,7 +99,7 @@ const Lobby: React.FC = () => {
           ) : (
             <form onSubmit={handleJoinRoom} className="space-y-4">
               <div>
-                <label htmlFor="roomId" className="block text-sm font-medium text-white mb-2">
+                <label htmlFor="roomId" className="block text-sm font-medium text-black mb-2">
                   Código da Sala
                 </label>
                 <input
@@ -108,7 +108,7 @@ const Lobby: React.FC = () => {
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value.toUpperCase())}
                   placeholder="Ex: ABC123"
-                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent uppercase"
+                  className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent uppercase"
                   maxLength={10}
                   required
                 />

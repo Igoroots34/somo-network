@@ -13,7 +13,7 @@ const Notifications: React.FC = () => {
         <div
           key={notification.id}
           className={`p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 ${
-            notification.type === 'success' ? 'bg-green-500 text-white' :
+            notification.type === 'success' ? 'bg-[#FFD700] text-black' :
             notification.type === 'error' ? 'bg-red-500 text-white' :
             notification.type === 'warning' ? 'bg-yellow-500 text-black' :
             'bg-blue-500 text-white'
@@ -62,7 +62,7 @@ const App: React.FC = () => {
   }, [connect, connected, connecting]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800">
+    <div className="min-h-screen bg-black">
       <ConnectionStatus />
       <Notifications />
       
@@ -71,7 +71,7 @@ const App: React.FC = () => {
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">
             SOMO
           </h1>
-          <p className="text-xl md:text-2xl text-purple-200">
+          <p className="text-xl md:text-2xl text-yellow-200">
             Network Blackout
           </p>
         </header>

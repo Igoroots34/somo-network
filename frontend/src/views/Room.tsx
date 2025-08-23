@@ -32,8 +32,9 @@ const CardComponent: React.FC<{
     switch (card.kind) {
       case 'number':
         return card.value?.toString() || '?';
-      case 'joker':
-        return card.value !== undefined ? card.value.toString() : 'J';
+        case 'joker':
+          // Usa valor apenas se não for null nem undefined; caso contrário exibe 'J'
+          return card.value != null ? card.value.toString() : 'J';
       case 'plus2':
         return '+2';
       case 'times2':
