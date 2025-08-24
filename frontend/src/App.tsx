@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useGameStore } from './store/game';
 import Lobby from './views/Lobby';
 import Room from './views/Room';
-import LogoNB from '../public/images/LOGO_NB.png'
 
 // Componente de notificações
 const Notifications: React.FC = () => {
