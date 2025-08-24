@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGameStore, useIsMyTurn, useIsHost } from '../store/game';
+import { useGameStore, useIsMyTurn, useIsHost, useSelfPlayer } from '../store/game';
 import { Card } from '../types';
 import jokerImg from '../assets/cards/joker.png';
 import plus2Img from '../assets/cards/plus2.png';
@@ -126,6 +126,7 @@ const Room: React.FC = () => {
 
   const isMyTurn = useIsMyTurn();
   const isHost = useIsHost();
+  const selfPlayer = useSelfPlayer();
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [jokerValue, setJokerValue] = useState<number>(0);
@@ -180,10 +181,6 @@ const Room: React.FC = () => {
     }
   };
 
-  const getSelfPlayer = () => {
-    return room.players.find(p => !p.is_bot && p.hand_count === selfHand.length);
-  };
-
   return (
     <div className="space-y-6">
       {/* Header da sala */}
@@ -198,13 +195,13 @@ const Room: React.FC = () => {
           <div className="flex space-x-2">
             <button
               onClick={toggleChat}
-              className="flex items-center px-4 py-2 bg-tranparent border border-[#FFD700] font-medium uppercase text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
+              className="flex items-center px-4 py-2 bg-transparent border border-[#FFD700] font-medium uppercase text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
             >
               Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
             </button>
             <button
               onClick={() => setView('lobby')}
-              className="flex items-center px-4 py-2 bg-tranparent border border-[#FF0000] font-medium uppercase text-[#FF0000] hover:bg-[#FF0000] hover:text-black transition-colors"
+              className="flex items-center px-4 py-2 bg-transparent border border-[#FF0000] font-medium uppercase text-[#FF0000] hover:bg-[#FF0000] hover:text-black transition-colors"
             >
               Sair <CircleX size={18} />
             </button>
@@ -218,7 +215,7 @@ const Room: React.FC = () => {
                 <button
                   onClick={startGame}
                   disabled={room.players.length < 2}
-                  className="px-6 py-2 bg-tranparent border border-[#0FC406] text-[#0FC406] font-medium uppercase hover:bg-[#0FC406] hover:text-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-2 bg-transparent border border-[#0FC406] text-[#0FC406] font-medium uppercase hover:bg-[#0FC406] hover:text-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Iniciar Jogo
                 </button>
@@ -227,19 +224,19 @@ const Room: React.FC = () => {
                 <div className="flex space-x-2 ">
                   <button
                     onClick={() => addBot('easy')}
-                    className="flex items-center justify-center px-4 py-2 bg-tranparent border border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-black transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-black transition-colors"
                   >
                     Easy <Bot size={18} />
                   </button>
                   <button
                     onClick={() => addBot('medium')}
-                    className=" flex items-center justify-center px-4 py-2 bg-tranparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
+                    className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
                   >
                     Medium <Bot size={18} />
                   </button>
                   <button
                     onClick={() => addBot('hard')}
-                    className="flex items-center justify-center px-4 py-2 bg-tranparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
                   >
                     Hard <Bot size={18} />
                   </button>
@@ -289,7 +286,7 @@ const Room: React.FC = () => {
               key={player.id}
               player={player}
               isCurrentTurn={player.id === room.current_turn}
-              isSelf={player.id === getSelfPlayer()?.id}
+              isSelf={player.id === selfPlayer?.id}  // compara com selfPlayer
             />
           ))}
         </div>

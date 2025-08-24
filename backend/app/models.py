@@ -94,6 +94,7 @@ class RoomStateEvent(BaseModel):
     event: Literal["room_state"] = "room_state"
     room: RoomState
     self_hand: Optional[List[Card]] = None  # Apenas a mão do próprio jogador
+    self_id: Optional[str] = None 
 
 class RoundStartedEvent(BaseModel):
     event: Literal["round_started"] = "round_started"

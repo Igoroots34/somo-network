@@ -24,7 +24,7 @@ const Lobby: React.FC = () => {
   };
 
 const ComoJogar: React.FC = () => (
-  <div className="w-full me-32 md:w-1/3 p-6 rounded-xl">
+  <div className="  p-6 ">
     <h3 className="text-xl font-bold text-[#FFD700] mb-6">
       Como Jogar
     </h3>
@@ -64,7 +64,7 @@ const ComoJogar: React.FC = () => (
 
   return (
     <div className="flex justify-between items-start">
-      <div className="flex-none text-xs w-1/3 p-4 ms-32 bg-[#FFD700] rounded-lg border-e border-b border-[#FFD700] backdrop-blur-md shadow-2xl">
+      <div className="flex-none text-xs w-1/4 p-4 ms-32 bg-[#FFD700] rounded-lg border-e border-b border-[#FFD700] backdrop-blur-md shadow-2xl">
         {/* Tabs */}
         <div className="flex">
           <button
@@ -168,7 +168,10 @@ const ComoJogar: React.FC = () => (
       </div>
 
       {/* Instruções do jogo */}
-      <ComoJogar/>
+      <div className='me-32 w-1/3'>
+          <ComoJogar/>
+      </div>
+      
     </div>
   );
 };

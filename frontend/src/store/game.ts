@@ -48,7 +48,8 @@ const initialState: GameState = {
   chatMessages: [],
   notifications: [],
   nickname: '',
-  roomId: ''
+  roomId: '',
+  selfId: ''
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -202,7 +203,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         set({
           room: event.room,
           selfHand: event.self_hand || [],
-          currentView: 'room'
+          currentView: 'room',
+          selfId: event.self_id
         });
         break;
 
@@ -298,38 +300,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
   }
 }));
 
-// Helper functions
+// Helper functions (use os IDs reais em vez de comparar tamanhos de mão)
 export const useIsMyTurn = () => {
-  const { room, selfHand } = useGameStore();
-  
-  if (!room || !room.game_started) return false;
-  
-  // Find self player ID by checking who has the same hand
-  const selfPlayer = room.players.find(player => 
-    !player.is_bot && player.hand_count === selfHand.length
-  );
-  
-  return selfPlayer?.id === room.current_turn;
+  const { room, selfId } = useGameStore();
+  return !!room && room.game_started && room.current_turn === selfId;
 };
 
 export const useIsHost = () => {
-  const { room, selfHand } = useGameStore();
-  
-  if (!room) return false;
-  
-  // Find self player ID
-  const selfPlayer = room.players.find(player => 
-    !player.is_bot && player.hand_count === selfHand.length
-  );
-  
-  return selfPlayer?.id === room.host_id;
+  const { room, selfId } = useGameStore();
+  return !!room && room.host_id === selfId;
 };
 
-export const useCurrentPlayer = () => {
-  const { room } = useGameStore();
-  
-  if (!room || !room.current_turn) return null;
-  
-  return room.players.find(p => p.id === room.current_turn) || null;
+/** Caso queira obter o próprio objeto Player */
+export const useSelfPlayer = () => {
+  const { room, selfId } = useGameStore();
+  return room?.players.find(p => p.id === selfId) ?? null;
 };
-

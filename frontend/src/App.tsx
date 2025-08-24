@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useGameStore } from './store/game';
 import Lobby from './views/Lobby';
 import Room from './views/Room';
+import LogoNB from '../public/images/LOGO_NB.png'
 
 // Componente de notificações
 const Notifications: React.FC = () => {
@@ -66,12 +67,9 @@ const App: React.FC = () => {
       <ConnectionStatus />
       <Notifications />
       
-      <div className="container px-4 py-8">
-        <header className="text-center mb-8">
+      <div className="container-full px-4 py-8">
+        <header className="text-center flex mb-8">
           <img src="../images/LOGO_SOMO.png" className='max-h-20 mx-auto' alt="Logo" />
-          <p className="text-xl md:text-2xl text-yellow-200">
-            Network Blackout
-          </p>
         </header>
 
         <main className="flex-none">

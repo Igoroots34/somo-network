@@ -105,6 +105,7 @@ export interface RoomStateEvent {
   event: 'room_state';
   room: RoomState;
   self_hand?: Card[];
+  self_id: string;
 }
 
 export interface RoundStartedEvent {
@@ -210,6 +211,8 @@ export interface GameState {
   // Formulários
   nickname: string;
   roomId: string;
+
+  selfId: string
 }
 
 export interface ChatMessage {

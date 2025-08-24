@@ -70,7 +70,8 @@ class ConnectionManager:
             await self.send_personal_message(player.id, {
             "event": "room_state",
             "room": public_room.model_dump(),
-            "self_hand": [c.model_dump() for c in (player.hand if not player.is_bot else [])]
+            "self_hand": [c.model_dump() for c in player.hand] if not player.is_bot else [],
+            "self_id": player.id  # Novo campo
             })
             
     
