@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/game';
+import { CheckCircle, AlertTriangle, ArrowRight, CircleDashed } from 'lucide-react';
+// importe os ícones que quiser usar; estes são apenas exemplos
 
 const Lobby: React.FC = () => {
   const { connected, createRoom, joinRoom, nickname, setNickname, roomId, setRoomId } = useGameStore();
@@ -21,14 +23,53 @@ const Lobby: React.FC = () => {
     }
   };
 
+const ComoJogar: React.FC = () => (
+  <div className="w-full me-32 md:w-1/3 p-6 rounded-xl">
+    <h3 className="text-xl font-bold text-[#FFD700] mb-6">
+      Como Jogar
+    </h3>
+
+    <ul className="space-y-3 text-sm text-[#FFD700]/80">
+      <li className="flex items-start">
+        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">O objetivo é não ser eliminado perdendo todos os tokens.</span>
+      </li>
+      <li className="flex items-start">
+        <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Cada jogador começa com 3 tokens.</span>
+      </li>
+      <li className="flex items-start">
+        <ArrowRight className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Jogue cartas sem exceder o limite da rodada.</span>
+      </li>
+      <li className="flex items-start">
+        <CircleDashed className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Cartas especiais: <strong>+2</strong>, <strong>x2</strong>, <strong>=0</strong>, <strong>Reverse</strong>.</span>
+      </li>
+      <li className="flex items-start">
+        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Acerte o limite exato para comprar +2 cartas.</span>
+      </li>
+      <li className="flex items-start">
+        <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Exceder o limite = perder 1 token.</span>
+      </li>
+      <li className="flex items-start">
+        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+        <span className="ml-3">Último jogador com tokens vence!</span>
+      </li>
+    </ul>
+  </div>
+);
+
   return (
-    <div className="max-w-md mx-auto">
-      <div className="bg-[#FFD700] border border-2 border-[#292929] backdrop-blur-md shadow-2xl overflow-hidden">
+    <div className="flex justify-between items-start">
+      <div className="flex-none text-xs w-1/3 p-4 ms-32 bg-[#FFD700] rounded-lg border-e border-b border-[#FFD700] backdrop-blur-md shadow-2xl">
         {/* Tabs */}
         <div className="flex">
           <button
             onClick={() => setActiveTab('create')}
-            className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
+            className={`w-1/2 py-4 px-6 text-center rounded-lg font-medium transition ease-in-out hover:-translate-y-1 hover:scale-102 duration-300 ${
               activeTab === 'create'
                 ? 'bg-black text-[#FFD700]'
                 : 'text-black/30 hover:text-black hover:bg-black/10'
@@ -38,10 +79,10 @@ const Lobby: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('join')}
-            className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
+            className={`w-1/2 py-4 px-6 text-center rounded-lg font-medium transition ease-in-out hover:-translate-y-1 hover:scale-102 duration-300 ${
               activeTab === 'join'
-                ? 'bg-black text-[#FFD700]'
-                : 'text-black/30 hover:text-black hover:bg-black/10'
+                ? 'bg-black text-[#FFD700] '
+                : 'text-black/30 hover:text-black hover:bg-black/10 '
             }`}
           >
             Entrar na Sala
@@ -60,7 +101,7 @@ const Lobby: React.FC = () => {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="Digite seu nickname"
-              className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full rounded-full px-4 py-2 bg-black/40 font-medium text-black placeholder-black/50 focus:outline-none focus:ring-1 focus:ring-black/60 focus:border-transparent"
               maxLength={20}
               required
             />
@@ -76,7 +117,7 @@ const Lobby: React.FC = () => {
                   id="maxPlayers"
                   value={maxPlayers}
                   onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full rounded-full px-4 py-2 bg-black/40  text-black placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 >
                   <option value={2} className="text-black ">2 jogadores</option>
                   <option value={3} className="text-black">3 jogadores</option>
@@ -91,7 +132,7 @@ const Lobby: React.FC = () => {
               <button
                 type="submit"
                 disabled={!connected || !nickname.trim()}
-                className="w-full my-4 py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full text-lg rounded-lg my-4 py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {connected ? 'Criar Sala' : 'Conectando...'}
               </button>
@@ -108,7 +149,7 @@ const Lobby: React.FC = () => {
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value.toUpperCase())}
                   placeholder="Ex: ABC123"
-                  className="w-full px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent uppercase"
+                  className="w-full rounded-lg px-4 py-3 bg-black/70 border border-black/90 text-[#FFD700] placeholder-yellow-600 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent uppercase"
                   maxLength={10}
                   required
                 />
@@ -117,7 +158,7 @@ const Lobby: React.FC = () => {
               <button
                 type="submit"
                 disabled={!connected || !nickname.trim() || !roomId.trim()}
-                className="w-full py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full rounded-lg py-6 px-6 bg-black text-[#FFD700] font-bold hover:from-yellow-900 hover:to-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-900 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {connected ? 'Entrar na Sala' : 'Conectando...'}
               </button>
@@ -127,18 +168,7 @@ const Lobby: React.FC = () => {
       </div>
 
       {/* Instruções do jogo */}
-      <div className="mt-8 bg-transparent border border-1 border-[#FFD700] p-6">
-        <h3 className="text-lg font-semibold text-[#FFD700] mb-4">Como Jogar</h3>
-        <div className="space-y-2 text-sm text-[#FFD700]/60">
-          <p>• O objetivo é não ser eliminado perdendo todos os tokens</p>
-          <p>• Cada jogador começa com 3 tokens</p>
-          <p>• Jogue cartas sem exceder o limite da rodada</p>
-          <p>• Cartas especiais: +2, x2, =0, Reverse</p>
-          <p>• Acerte o limite exato para comprar +2 cartas</p>
-          <p>• Exceder o limite = perder 1 token</p>
-          <p>• Último jogador com tokens vence!</p>
-        </div>
-      </div>
+      <ComoJogar/>
     </div>
   );
 };

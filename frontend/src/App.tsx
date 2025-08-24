@@ -66,7 +66,7 @@ const App: React.FC = () => {
       <ConnectionStatus />
       <Notifications />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container px-4 py-8">
         <header className="text-center mb-8">
           <img src="../images/LOGO_SOMO.png" className='max-h-20 mx-auto' alt="Logo" />
           <p className="text-xl md:text-2xl text-yellow-200">
@@ -74,7 +74,7 @@ const App: React.FC = () => {
           </p>
         </header>
 
-        <main className="max-w-6xl mx-auto">
+        <main className="flex-none">
           {currentView === 'lobby' ? <Lobby /> : <Room />}
         </main>
       </div>
