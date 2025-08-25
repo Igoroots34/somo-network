@@ -1,6 +1,6 @@
 import random
 from typing import List, Dict, Any, Optional
-from ..models import RoomState, PlayerState, Card, CardKind, PendingEffect
+from ..models import RoomState, PlayerState, CardComp, CardKind, PendingEffect
 from .state import GameStateManager
 from .deck import DeckManager
 
@@ -99,7 +99,7 @@ class GameEngine:
         
         card = GameStateManager.find_card_in_hand(player, card_id)
         if not card:
-            return {"success": False, "error": "Card not in hand"}
+            return {"success": False, "error": "CardComp not in hand"}
         
         # Verifica se é carta numérica ou joker
         if card.kind not in [CardKind.NUMBER, CardKind.JOKER]:
@@ -115,7 +115,7 @@ class GameEngine:
         
         # Verifica se pode jogar a carta (sem efeito pendente na validação)
         if not self.can_play_number(card_value, room.accumulated_sum, room.round_limit):
-            return {"success": False, "error": "Card would exceed limit"}
+            return {"success": False, "error": "CardComp would exceed limit"}
         
         # Remove a carta da mão
         GameStateManager.remove_card_from_hand(player, card_id)
@@ -248,7 +248,7 @@ class GameEngine:
         
         card = GameStateManager.find_card_in_hand(player, card_id)
         if not card:
-            return {"success": False, "error": "Card not in hand"}
+            return {"success": False, "error": "CardComp not in hand"}
         
         # Verifica se a carta corresponde ao tipo especial
         expected_kind = {
@@ -259,7 +259,7 @@ class GameEngine:
         }.get(special_type)
         
         if card.kind != expected_kind:
-            return {"success": False, "error": f"Card is not {special_type}"}
+            return {"success": False, "error": f"CardComp is not {special_type}"}
         
         # Remove a carta da mão
         GameStateManager.remove_card_from_hand(player, card_id)

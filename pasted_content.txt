@@ -177,11 +177,11 @@ error {code, message}
 
 Schemas (Pydantic) essenciais:
 
-Card { id: str, kind: "number"|"joker"|"plus2"|"times2"|"reset0"|"reverse", value?: int }
+CardComp { id: str, kind: "number"|"joker"|"plus2"|"times2"|"reset0"|"reverse", value?: int }
 
 PlayerState { id, nickname, tokens, handCount, isBot } (não envie mãos dos outros)
 
-ClientSeat { selfHand: Card[] }
+ClientSeat { selfHand: CardComp[] }
 
 RoomState { id, players, currentTurn, direction, sum, limit, pendingEffect, deckCount, discardTop }
 
@@ -210,7 +210,7 @@ Reverse + efeito pendente: após inverter sentido, próximo jogador passa a ser 
 5) Bots (stub pronto)
 
 class BotStrategy:
-def choose_action(state: RoomState, hand: List[Card]) -> Action:
+def choose_action(state: RoomState, hand: List[CardComp]) -> Action:
 Comece com um bot Greedy: tenta =0 se estiver alto, caso contrário joga o menor número viável; usa Reverse para devolver efeito pendente perigoso; se não puder jogar, envia pass_turn.
 
 6) Telas do frontend

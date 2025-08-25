@@ -5,7 +5,7 @@ import os
 # Adiciona o diretório pai ao path para importar os módulos
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from app.models import RoomState, PlayerState, Card, CardKind, PendingEffect
+from app.models import RoomState, PlayerState, CardComp, CardKind, PendingEffect
 from app.engine.deck import DeckManager
 from app.engine.state import GameStateManager
 from app.engine.rules import GameEngine
@@ -250,7 +250,7 @@ class TestGameEngine:
         
         # Adiciona uma carta de valor 5 na mão do jogador atual
         current_player = next(p for p in room.players if p.id == room.current_turn)
-        test_card = Card(kind=CardKind.NUMBER, value=5)
+        test_card = CardComp(kind=CardKind.NUMBER, value=5)
         current_player.hand.append(test_card)
         
         # Joga a carta

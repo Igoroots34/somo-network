@@ -11,7 +11,7 @@ class CardKind(str, Enum):
     RESET0 = "reset0"
     REVERSE = "reverse"
 
-class Card(BaseModel):
+class CardComp(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     kind: CardKind
     value: Optional[int] = None  # Para cartas numéricas e joker quando jogado
@@ -25,7 +25,7 @@ class PlayerState(BaseModel):
     id: str
     nickname: str
     tokens: int = 3
-    hand: List[Card] = Field(default_factory=list)
+    hand: List[CardComp] = Field(default_factory=list)
     is_bot: bool = False
     is_eliminated: bool = False
 
@@ -40,8 +40,8 @@ class RoomState(BaseModel):
     accumulated_sum: int = 0
     round_limit: int = 0
     pending_effect: Optional[PendingEffect] = None
-    deck: List[Card] = Field(default_factory=list)
-    discard_pile: List[Card] = Field(default_factory=list)
+    deck: List[CardComp] = Field(default_factory=list)
+    discard_pile: List[CardComp] = Field(default_factory=list)
     turn_order: List[str] = Field(default_factory=list)
 
 # Ações do cliente para o servidor
@@ -87,13 +87,13 @@ class AddBotAction(BaseModel):
 
 class Event(BaseModel):
     room: RoomState
-    self_hand: Optional[List[Card]] = None
+    self_hand: Optional[List[CardComp]] = None
 
 # Eventos do servidor para o cliente
 class RoomStateEvent(BaseModel):
     event: Literal["room_state"] = "room_state"
     room: RoomState
-    self_hand: Optional[List[Card]] = None  # Apenas a mão do próprio jogador
+    self_hand: Optional[List[CardComp]] = None  # Apenas a mão do próprio jogador
     self_id: Optional[str] = None 
 
 class RoundStartedEvent(BaseModel):
@@ -103,7 +103,7 @@ class RoundStartedEvent(BaseModel):
 class CardPlayedEvent(BaseModel):
     event: Literal["card_played"] = "card_played"
     player_id: str
-    card: Card
+    card: CardComp
     sum: int
 
 class EffectSetEvent(BaseModel):
@@ -172,6 +172,6 @@ class PublicRoomState(BaseModel):
     round_limit: int = 0
     pending_effect: Optional[PendingEffect] = None
     deck_count: int = 0
-    discard_top: Optional[Card] = None
+    discard_top: Optional[CardComp] = None
     turn_order: List[str] = Field(default_factory=list)
 

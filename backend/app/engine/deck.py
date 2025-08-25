@@ -1,12 +1,12 @@
 import random
 from typing import List
-from ..models import Card, CardKind
+from ..models import CardComp, CardKind
 
 class DeckManager:
     """Gerencia a criação, embaralhamento e distribuição de cartas"""
     
     @staticmethod
-    def create_deck() -> List[Card]:
+    def create_deck() -> List[CardComp]:
         """
         Cria um baralho completo seguindo as especificações do jogo:
         - 60 cartas numéricas: 6 cópias de cada 0-9
@@ -21,42 +21,42 @@ class DeckManager:
         # 60 cartas numéricas: 6 cópias de cada 0-9
         for value in range(10):  # 0 a 9
             for _ in range(6):  # 6 cópias de cada
-                deck.append(Card(
+                deck.append(CardComp(
                     kind=CardKind.NUMBER,
                     value=value
                 ))
         
         # 6 Reverse
         for _ in range(6):
-            deck.append(Card(kind=CardKind.REVERSE))
+            deck.append(CardComp(kind=CardKind.REVERSE))
         
         # 6 x2 (Multiplica por 2)
         for _ in range(6):
-            deck.append(Card(kind=CardKind.TIMES2))
+            deck.append(CardComp(kind=CardKind.TIMES2))
         
         # 7 +2 (Soma +2)
         for _ in range(7):
-            deck.append(Card(kind=CardKind.PLUS2))
+            deck.append(CardComp(kind=CardKind.PLUS2))
         
         # 7 =0 (Zera)
         for _ in range(7):
-            deck.append(Card(kind=CardKind.RESET0))
+            deck.append(CardComp(kind=CardKind.RESET0))
         
         # 4 Joker (Coringa)
         for _ in range(4):
-            deck.append(Card(kind=CardKind.JOKER))
+            deck.append(CardComp(kind=CardKind.JOKER))
         
         return deck
     
     @staticmethod
-    def shuffle_deck(deck: List[Card]) -> List[Card]:
+    def shuffle_deck(deck: List[CardComp]) -> List[CardComp]:
         """Embaralha o baralho"""
         shuffled = deck.copy()
         random.shuffle(shuffled)
         return shuffled
     
     @staticmethod
-    def draw_cards(deck: List[Card], count: int) -> tuple[List[Card], List[Card]]:
+    def draw_cards(deck: List[CardComp], count: int) -> tuple[List[CardComp], List[CardComp]]:
         """
         Retira cartas do topo do baralho
         
@@ -77,7 +77,7 @@ class DeckManager:
         return drawn_cards, remaining_deck
     
     @staticmethod
-    def get_deck_stats(deck: List[Card]) -> dict:
+    def get_deck_stats(deck: List[CardComp]) -> dict:
         """
         Retorna estatísticas do baralho para debug/validação
         
@@ -105,7 +105,7 @@ class DeckManager:
         return stats
     
     @staticmethod
-    def validate_deck(deck: List[Card]) -> bool:
+    def validate_deck(deck: List[CardComp]) -> bool:
         """
         Valida se o baralho tem a composição correta
         
@@ -139,7 +139,7 @@ class DeckManager:
         return True
     
     @staticmethod
-    def create_and_shuffle_deck() -> List[Card]:
+    def create_and_shuffle_deck() -> List[CardComp]:
         """
         Método de conveniência que cria e embaralha um baralho completo
         
@@ -150,7 +150,7 @@ class DeckManager:
         return DeckManager.shuffle_deck(deck)
     
     @staticmethod
-    def reshuffle_with_discard(deck: List[Card], discard_pile: List[Card], keep_top: bool = True) -> List[Card]:
+    def reshuffle_with_discard(deck: List[CardComp], discard_pile: List[CardComp], keep_top: bool = True) -> List[CardComp]:
         """
         Reembaralha o baralho com as cartas do descarte
         

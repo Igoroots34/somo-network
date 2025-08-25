@@ -1,6 +1,6 @@
 import random
 from typing import List, Dict, Any, Optional
-from ..models import RoomState, PlayerState, Card, CardKind
+from ..models import RoomState, PlayerState, CardComp, CardKind
 from .state import GameStateManager
 from .rules import GameEngine
 import uuid

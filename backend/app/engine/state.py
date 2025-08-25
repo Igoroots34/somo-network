@@ -1,6 +1,6 @@
 import random
 from typing import List, Optional
-from ..models import RoomState, PlayerState, Card, PendingEffect
+from ..models import RoomState, PlayerState, CardComp, PendingEffect
 
 class GameStateManager:
     """Gerencia o estado do jogo, turnos e transições"""
@@ -179,7 +179,7 @@ class GameStateManager:
         return False
     
     @staticmethod
-    def distribute_cards_to_all(room: RoomState, deck: List[Card], cards_per_player: int) -> List[Card]:
+    def distribute_cards_to_all(room: RoomState, deck: List[CardComp], cards_per_player: int) -> List[CardComp]:
         """
         Distribui cartas para todos os jogadores ativos
         
@@ -204,7 +204,7 @@ class GameStateManager:
         return remaining_deck
     
     @staticmethod
-    def distribute_cards_to_player(room: RoomState, deck: List[Card], player_id: str, card_count: int) -> List[Card]:
+    def distribute_cards_to_player(room: RoomState, deck: List[CardComp], player_id: str, card_count: int) -> List[CardComp]:
         """
         Distribui cartas para um jogador específico
         
@@ -231,12 +231,12 @@ class GameStateManager:
         return deck
     
     @staticmethod
-    def find_card_in_hand(player: PlayerState, card_id: str) -> Optional[Card]:
+    def find_card_in_hand(player: PlayerState, card_id: str) -> Optional[CardComp]:
         """Encontra uma carta na mão do jogador pelo ID"""
         return next((card for card in player.hand if card.id == card_id), None)
     
     @staticmethod
-    def remove_card_from_hand(player: PlayerState, card_id: str) -> Optional[Card]:
+    def remove_card_from_hand(player: PlayerState, card_id: str) -> Optional[CardComp]:
         """
         Remove uma carta da mão do jogador
         
