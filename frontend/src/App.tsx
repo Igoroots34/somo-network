@@ -62,16 +62,13 @@ const App: React.FC = () => {
   }, [connect, connected, connecting]);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen flex items-center justify-center bg-black">
       <ConnectionStatus />
       <Notifications />
       
       <div className="container-full px-4 py-8">
-        <header className="text-center flex mb-8">
-          <img src="../images/LOGO_SOMO.png" className='max-h-20 mx-auto' alt="Logo" />
-        </header>
 
-        <main className="flex-none">
+        <main className="flex ">
           {currentView === 'lobby' ? <Lobby /> : <Room />}
         </main>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore, useIsMyTurn, useIsHost, useSelfPlayer } from '../store/game';
-import { Card } from '../types';
+import { CardComp } from '../types';
 import jokerImg from '../assets/cards/joker.png';
 import plus2Img from '../assets/cards/plus2.png';
 import times2Img from '../assets/cards/times2.png';
@@ -17,7 +17,18 @@ import card6Image from '../assets/cards/6.png';
 import card7Image from '../assets/cards/7.png';
 import card8Image from '../assets/cards/8.png';
 import card9Image from '../assets/cards/9.png';
-import { CircleArrowUp, CircleArrowDown, CircleX, Bot } from 'lucide-react';
+import { CircleArrowUp, CircleArrowDown, CircleX, Bot, RotateCcw, RotateCw, Cpu } from 'lucide-react';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -34,7 +45,7 @@ const numberImages: Record<number, string> = {
 };
 
 // Componente para renderizar uma carta
-function getCardImage(card: Card): string {
+function getCardImage(card: CardComp): string {
   switch (card.kind) {
     case 'number':
       return numberImages[card.value ?? 0];
@@ -54,13 +65,13 @@ function getCardImage(card: Card): string {
 }
 
 const CardComponent: React.FC<{
-  card: Card;
+  card: CardComp;
   onClick?: () => void;
   disabled?: boolean;
   small?: boolean;
 }> = ({ card, onClick, disabled = false, small = false }) => {
   const imgSrc = getCardImage(card);
-  const sizeClasses = small ? 'w-8 h-12' : 'w-16 h-24';
+  const sizeClasses = small ? 'w-8' : 'w-32';
 
   return (
     <button
@@ -84,8 +95,8 @@ const PlayerComponent: React.FC<{
   isSelf: boolean;
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
-    <div className={`p-4 ${isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
-      } ${isSelf ? 'bg-black outline outline-[#FFD700]' : ''}`}>
+    <Card className={`p-4 ${isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
+      } ${isSelf ? 'bg-black' : ''}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
           <span className={`flex items-center text-sm font-medium ${player.is_eliminated ? 'text-red-400 line-through' : 'text-[#FFD700]'
@@ -101,12 +112,12 @@ const PlayerComponent: React.FC<{
           </span>
           <div className="flex space-x-1">
             {Array.from({ length: player.tokens }).map((_, i) => (
-              <div key={i} className="w-2 h-2 bg-green-400 rounded-full" />
+              <Cpu key={i} className="w-4 text-green-400" />
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -128,7 +139,7 @@ const Room: React.FC = () => {
   const isHost = useIsHost();
   const selfPlayer = useSelfPlayer();
 
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<CardComp | null>(null);
   const [jokerValue, setJokerValue] = useState<number>(0);
 
   if (!room) {
@@ -139,7 +150,7 @@ const Room: React.FC = () => {
     );
   }
 
-  const handleCardClick = (card: Card) => {
+  const handleCardClick = (card: CardComp) => {
     if (!isMyTurn) return;
 
     if (card.kind === 'joker') {
@@ -162,7 +173,7 @@ const Room: React.FC = () => {
     }
   };
 
-  const canPlayCard = (card: Card): boolean => {
+  const canPlayCard = (card: CardComp): boolean => {
     if (!isMyTurn) return false;
 
     if (card.kind === 'number') {
@@ -182,89 +193,100 @@ const Room: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex space-x-4 justify-between">
       {/* Header da sala */}
-      <div className="bg-[#171717] border border-[#FFD700] p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-[#FFD700] uppercase">Sala {room.id}</h2>
-            <p className="text-[#FFD700]/60">
+      <div className='space-y-4 max-w-2xl'>
+        <Card className=" p-6">
+        <CardHeader className="flex justify-between">
+          <CardTitle className='text-lg'>
+            Sala {room.id}
+            <CardDescription className="">
               {room.players.length}/{room.max_players} jogadores
-            </p>
-          </div>
-          <div className="flex space-x-2">
-            <button
+            </CardDescription>
+          </CardTitle>
+          <CardAction className="flex space-x-2">
+            <Button variant="secondary"
               onClick={toggleChat}
-              className="flex items-center px-4 py-2 bg-transparent border border-[#FFD700] font-medium uppercase text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
+              className=""
             >
               Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
-            </button>
-            <button
+            </Button>
+            <Button variant="destructive"
               onClick={() => setView('lobby')}
-              className="flex items-center px-4 py-2 bg-transparent border border-[#FF0000] font-medium uppercase text-[#FF0000] hover:bg-[#FF0000] hover:text-black transition-colors"
+              className=""
             >
               Sair <CircleX size={18} />
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardAction>
+        </CardHeader>
 
         {!room.game_started ? (
-          <div className="space-y-4">
-            <div className="flex justify-between">
+          <CardContent className="space-y-4">
+            <Card className="flex items-center">
               {isHost && (
-                <button
+                <Button
                   onClick={startGame}
                   disabled={room.players.length < 2}
-                  className="px-6 py-2 bg-transparent border border-[#0FC406] text-[#0FC406] font-medium uppercase hover:bg-[#0FC406] hover:text-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="w-sm bg-green-400 hover:bg-green-400/80"
                 >
                   Iniciar Jogo
-                </button>
+                </Button>
               )}
               {isHost && room.players.length < room.max_players && (
-                <div className="flex space-x-2 ">
-                  <button
+                <div className="flex justify-center space-x-2 ">
+                  <Button
                     onClick={() => addBot('easy')}
-                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-black transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-colors"
                   >
                     Easy <Bot size={18} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => addBot('medium')}
                     className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
                   >
                     Medium <Bot size={18} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => addBot('hard')}
                     className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
                   >
                     Hard <Bot size={18} />
-                  </button>
+                  </Button>
                 </div>
               )}
-            </div>
-          </div>
+            </Card>
+          </CardContent>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="text-2xl font-bold text-white">{room.accumulated_sum}</div>
-              <div className="text-sm text-white/70">Soma Atual</div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="text-2xl font-bold text-white">{room.round_limit}</div>
-              <div className="text-sm text-white/70">Limite</div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="text-2xl font-bold text-white">{room.deck_count}</div>
-              <div className="text-sm text-white/70">Cartas no Baralho</div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="text-sm text-white">
-                {room.direction ? '🔄 Horário' : '🔄 Anti-horário'}
-              </div>
-              <div className="text-sm text-white/70">Direção</div>
-            </div>
-          </div>
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className=" bg-white/20 rounded-lg p-3">
+              <Label className="justify-center text-4xl font-bold">{room.accumulated_sum}</Label>
+              <Label className="justify-center text-sm text-white/70">Soma Atual</Label>
+            </Card>
+            <Card className="bg-white/20 rounded-lg p-3">
+              <Label className="justify-center text-4xl font-bold">{room.round_limit}</Label>
+              <Label className="justify-center text-sm text-white/70">Limite</Label>
+            </Card>
+            <Card className="bg-white/20 rounded-lg p-3">
+              <Label className="justify-center text-4xl font-bold">{room.deck_count}</Label>
+              <Label className="justify-center text-sm text-white/70">Cartas no Baralho</Label>
+            </Card>
+            <Card className="bg-white/20 rounded-lg p-3 flex justify-center items-center">
+              <Label className="flex justify-center items-center gap-2 text-lg">
+                {room.direction ? (
+                  <>
+                    <RotateCw className="w-5 h-5" />
+                    Horário
+                  </>
+                ) : (
+                  <>
+                    <RotateCcw className="w-5 h-5" />
+                    Anti-horário
+                  </>
+                )}
+              </Label>
+            </Card>
+
+          </CardContent>
         )}
 
         {room.pending_effect && (
@@ -275,12 +297,12 @@ const Room: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Lista de jogadores */}
-      <div className="bg-[#171717] border border-[#FFD700] p-6">
-        <h3 className="text-lg font-semibold text-[#FFD700] mb-4">Jogadores</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <Card className=" p-6">
+        <CardTitle className="text-lg font-semibold ps-6">Jogadores</CardTitle>
+        <CardContent className="grid grid-cols-2 md:grid-cols-2 gap-2">
           {room.players.map((player) => (
             <PlayerComponent
               key={player.id}
@@ -289,14 +311,15 @@ const Room: React.FC = () => {
               isSelf={player.id === selfPlayer?.id}  // compara com selfPlayer
             />
           ))}
-        </div>
+        </CardContent>
+      </Card>
       </div>
 
       {/* Cartas do jogador */}
       {room.game_started && selfHand.length > 0 && (
-        <div className="bg-[#171717] border border-[#FFD700] p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-[#FFD700]">Suas Cartas</h3>
+        <Card className=" p-6">
+          <CardContent className="flex justify-between items-center mb-4">
+            <CardTitle className="text-lg font-semibold">Suas Cartas</CardTitle>
             {isMyTurn && (
               <div className="flex space-x-2">
                 <span className="text-green-400 font-medium">Sua vez!</span>
@@ -308,9 +331,9 @@ const Room: React.FC = () => {
                 </button>
               </div>
             )}
-          </div>
+          </CardContent>
 
-          <div className="flex flex-wrap gap-3 justify-center">
+          <CardContent className="grid grid-cols-4 gap-3 justify-center">
             {selfHand.map((card) => (
               <CardComponent
                 key={card.id}
@@ -319,8 +342,8 @@ const Room: React.FC = () => {
                 disabled={!canPlayCard(card)}
               />
             ))}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Modal para joker */}

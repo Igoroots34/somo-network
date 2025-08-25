@@ -1,7 +1,7 @@
 // Tipos de cartas
 export type CardKind = 'number' | 'joker' | 'plus2' | 'times2' | 'reset0' | 'reverse';
 
-export interface Card {
+export interface CardComp {
   id: string;
   kind: CardKind;
   value?: number;
@@ -37,7 +37,7 @@ export interface RoomState {
   round_limit: number;
   pending_effect?: PendingEffect;
   deck_count: number;
-  discard_top?: Card;
+  discard_top?: CardComp;
   turn_order: string[];
 }
 
@@ -104,7 +104,7 @@ export type ClientAction =
 export interface RoomStateEvent {
   event: 'room_state';
   room: RoomState;
-  self_hand?: Card[];
+  self_hand?: CardComp[];
   self_id: string;
 }
 
@@ -116,7 +116,7 @@ export interface RoundStartedEvent {
 export interface CardPlayedEvent {
   event: 'card_played';
   player_id: string;
-  card: Card;
+  card: CardComp;
   sum: number;
 }
 
@@ -198,7 +198,7 @@ export interface GameState {
   
   // Sala atual
   room?: RoomState;
-  selfHand: Card[];
+  selfHand: CardComp[];
   
   // UI
   currentView: 'lobby' | 'room';
