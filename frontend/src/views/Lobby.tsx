@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/game';
-import { CheckCircle, AlertTriangle, ArrowRight, CircleDashed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
+import { HexagonBackground } from '@/components/animate-ui/buttons/backgrounds/hexagon';
 // importe os ícones que quiser usar; estes são apenas exemplos
 
 const Lobby: React.FC = () => {
@@ -35,53 +35,27 @@ const Lobby: React.FC = () => {
     }
   };
 
-const ComoJogar: React.FC = () => (
-  <div className="  p-6 ">
-    <h3 className="text-xl font-bold text-[#FFD700] mb-6">
-      Como Jogar
-    </h3>
-
-    <ul className="space-y-3 text-sm text-[#FFD700]/80">
-      <li className="flex items-start">
-        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">O objetivo é não ser eliminado perdendo todos os tokens.</span>
-      </li>
-      <li className="flex items-start">
-        <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Cada jogador começa com 3 tokens.</span>
-      </li>
-      <li className="flex items-start">
-        <ArrowRight className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Jogue cartas sem exceder o limite da rodada.</span>
-      </li>
-      <li className="flex items-start">
-        <CircleDashed className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Cartas especiais: <strong>+2</strong>, <strong>x2</strong>, <strong>=0</strong>, <strong>Reverse</strong>.</span>
-      </li>
-      <li className="flex items-start">
-        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Acerte o limite exato para comprar +2 cartas.</span>
-      </li>
-      <li className="flex items-start">
-        <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Exceder o limite = perder 1 token.</span>
-      </li>
-      <li className="flex items-start">
-        <CheckCircle className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-        <span className="ml-3">Último jogador com tokens vence!</span>
-      </li>
-    </ul>
-  </div>
-);
-
   return (
-    <div className="flex justify-between items-center w-full h-full">
-      <div className="flex-none text-xs min-w-lg p-4 backdrop-blur-md shadow-2xl">
+    <div className="flex border border-gray-600 rounded-lg justify-center items-center">
+      <div className="flex-none justify-center">
+      <div className="flex flex-row justify-center gap-4 mb-4">
+        <img
+          className="w-24 h-24 object-contain"
+          src="../src/assets/LOGO_SOMO.png"
+          alt="Logo SOMO"
+        />
+        <Label className='text-[#FFD700]'>X</Label>
+        <img
+          className="w-24 h-24 object-contain"
+          src="../src/assets/LOGO_NB.png"
+          alt="Logo NB"
+        />
+      </div>
         {/* Tabs */}
-        <div className="flex space-x-2 justify-center">
+        <div className="flex min-w-125 space-x-2 justify-center">
           <Button variant="link" 
           onClick={() => setActiveTab('create')}
-          className={`w-1/2 py-4 px-6 text-center text-[#FFD700] rounded-lg font-medium ${
+          className={`w-1/2 text-lg text-center text-[#FFD700] font-bold ${
             activeTab === 'join'
               ? 'text-white/50'
               : 'underline underline-offset-8'
@@ -91,7 +65,7 @@ const ComoJogar: React.FC = () => (
             
           <Button variant="link"
             onClick={() => setActiveTab('join')}
-            className={`w-1/2 py-4 px-6 text-center text-[#FFD700] rounded-lg font-medium ${
+            className={`w-1/2 text-lg text-center text-[#FFD700] font-bold ${
               activeTab === 'join'
                 ? 'underline underline-offset-8'
                 : 'text-white/50'
@@ -188,8 +162,10 @@ const ComoJogar: React.FC = () => (
       </div>
 
       {/* Instruções do jogo */}
-      <div className='h-full me-32 w-1/3'>
-          <img src="../images/Banner.jpg" style={{width: "fit-content"}} alt="" />
+      <div className=''>
+          <div className='relative flex rounded-md items-end max-h-80 max-w-100 min-h-140 min-w-122 bg-[#FFD700] me-3 my-3'>
+          <HexagonBackground hexagonSize={30} className="absolute inset-0 flex items-center justify-center rounded-md mix-blend-difference" />
+          </div>
       </div>
       
     </div>

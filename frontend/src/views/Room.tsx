@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -199,7 +200,7 @@ const Room: React.FC = () => {
         <Card className=" p-6">
         <CardHeader className="flex justify-between">
           <CardTitle className='text-lg'>
-            Sala {room.id}
+            Sala {room.id} <CopyButton variant={'ghost'} content={room.id} size="md"></CopyButton>
             <CardDescription className="">
               {room.players.length}/{room.max_players} jogadores
             </CardDescription>
