@@ -17,19 +17,17 @@ import card6Image from '../assets/cards/6.png';
 import card7Image from '../assets/cards/7.png';
 import card8Image from '../assets/cards/8.png';
 import card9Image from '../assets/cards/9.png';
-import { CircleArrowUp, CircleArrowDown, CircleX, Bot, RotateCcw, RotateCw, Cpu } from 'lucide-react';
+import { CircleArrowUp, CircleArrowDown, CircleX, RotateCcw, RotateCw, Cpu } from 'lucide-react';
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
+import { Star } from '@/components/animate-ui/icons/star';
+import { Bot } from '@/components/animate-ui/icons/bot';
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -96,29 +94,59 @@ const PlayerComponent: React.FC<{
   isSelf: boolean;
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
-    <Card className={`p-4 ${isCurrentTurn ? 'bg-tranparent border border-[#FFD700]' : 'bg-tranparent'
-      } ${isSelf ? 'bg-black' : ''}`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          <span className={`flex items-center text-sm font-medium ${player.is_eliminated ? 'text-red-400 line-through' : 'text-[#FFD700]'
-            }`}>
-            {player.nickname}
-            {player.is_bot && <Bot size={18} />}
-            {isSelf && ' (Você)'}
-          </span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-xs text-white/70">
-            {player.hand_count} cartas
-          </span>
-          <div className="flex space-x-1">
-            {Array.from({ length: player.tokens }).map((_, i) => (
-              <Cpu key={i} className="w-4 text-green-400" />
-            ))}
+    <Card
+  className={`p-4 ${
+    isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"
+  } ${isSelf ? "bg-" : ""}`}
+>
+  <div className="flex items-center justify-between">
+    <div className="flex items-center">
+      <span
+        className={`flex items-center gap-2 text-[12px] font-medium ${
+          player.is_eliminated
+            ? "text-red-400 line-through"
+            : "text-[#FFD700]"
+        }`}
+      >
+        {player.nickname}
+
+        {/* Ícone do Bot */}
+        {player.is_bot && (
+          <Bot
+            className={`w-4 h-4 ${
+              isCurrentTurn ? "animate-bounce text-cyan-400" : "text-gray-400"
+            }`}
+          />
+        )}
+
+        {/* Estrela se for o próprio player */}
+        {isSelf && (
+          <Star
+            className={`w-4 h-4 ${
+              isCurrentTurn ? "animate-pulse text-yellow-400" : "text-gray-400"
+            }`}
+          />
+        )}
+      </span>
+    </div>
+
+    <div className="flex items-center space-x-2">
+      <span className="text-[14px] font-bold text-white/70">
+        <div className='bg-[#FFD700] px-1 rounded'>
+          <div className='text-black'>
+            {player.hand_count}
           </div>
         </div>
+      </span>
+      <div className="flex space-x-1">
+        {Array.from({ length: player.tokens }).map((_, i) => (
+          <Cpu key={i} className="w-4 text-green-400" />
+        ))}
       </div>
-    </Card>
+    </div>
+  </div>
+</Card>
+
   );
 };
 
@@ -194,71 +222,89 @@ const Room: React.FC = () => {
   };
 
   return (
-    <div className="flex space-x-4 justify-between">
+    <div className="w-7xl space-y-4">
       {/* Header da sala */}
-      <div className='space-y-4 max-w-2xl'>
-        <Card className=" p-6">
-        <CardHeader className="flex justify-between">
-          <CardTitle className='text-lg'>
-            Sala {room.id} <CopyButton variant={'ghost'} content={room.id} size="md"></CopyButton>
-            <CardDescription className="">
-              {room.players.length}/{room.max_players} jogadores
-            </CardDescription>
-          </CardTitle>
-          <CardAction className="flex space-x-2">
-            <Button variant="secondary"
-              onClick={toggleChat}
-              className=""
-            >
-              Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
-            </Button>
-            <Button variant="destructive"
-              onClick={() => setView('lobby')}
-              className=""
-            >
-              Sair <CircleX size={18} />
-            </Button>
-          </CardAction>
-        </CardHeader>
+      
+      <Card className='p-6'>
+        <div className="flex justify-between items-center">
+          <img
+            className="w-20 h-20 object-contain"
+            src="../src/assets/LOGO_SOMO.png"
+            alt="Logo SOMO"
+          />
+          <div className='flex flex-col'>
+           <div>
+           Sala {room.id}
+            <CopyButton variant={'ghost'} content={room.id} size="sm"></CopyButton>
+           </div>
 
-        {!room.game_started ? (
-          <CardContent className="space-y-4">
-            <Card className="flex items-center">
-              {isHost && (
-                <Button
-                  onClick={startGame}
-                  disabled={room.players.length < 2}
-                  className="w-sm bg-green-400 hover:bg-green-400/80"
-                >
-                  Iniciar Jogo
-                </Button>
-              )}
-              {isHost && room.players.length < room.max_players && (
-                <div className="flex justify-center space-x-2 ">
-                  <Button
-                    onClick={() => addBot('easy')}
-                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-colors"
-                  >
-                    Easy <Bot size={18} />
-                  </Button>
-                  <Button
-                    onClick={() => addBot('medium')}
-                    className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
-                  >
-                    Medium <Bot size={18} />
-                  </Button>
-                  <Button
-                    onClick={() => addBot('hard')}
-                    className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
-                  >
-                    Hard <Bot size={18} />
-                  </Button>
-                </div>
-              )}
-            </Card>
-          </CardContent>
-        ) : (
+            {room.players.length}/{room.max_players} jogadores
+          </div>
+          <div className='space-x-2'>
+          <Button variant="secondary"
+            onClick={toggleChat}
+            className=""
+          >
+            Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
+          </Button>
+          <Button variant="destructive"
+            onClick={() => setView('lobby')}
+            className=""
+          >
+            Sair <CircleX size={18} />
+          </Button>
+          </div>
+          {isHost && room.players.length < room.max_players && (
+            <div className="flex items-center space-x-2 ">
+              <Button
+                onClick={() => addBot('easy')}
+                className="flex items-center justify-center px-4 py-2 bg-transparent border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-colors"
+              >
+                LOW <Bot size={18} />
+              </Button>
+              <Button
+                onClick={() => addBot('medium')}
+                className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
+              >
+                MID <Bot size={18} />
+              </Button>
+              <Button
+                onClick={() => addBot('hard')}
+                className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
+              >
+                HIGH <Bot size={18} />
+              </Button>
+            </div>
+          )}
+          {isHost && (
+            <Button
+              onClick={startGame}
+              disabled={room.players.length < 2}
+              className="w-12 bg-[#FFD700] hover:bg-[#FFD700]/80"
+            >
+              Play
+            </Button>
+          )}
+        </div>
+      </Card>
+      {/* Lista de jogadores */}
+
+      <Card className="p-6 w-250 ">
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {room.players.map((player) => (
+              <PlayerComponent
+                key={player.id}
+                player={player}
+                isCurrentTurn={player.id === room.current_turn}
+                isSelf={player.id === selfPlayer?.id}  // compara com selfPlayer
+              />
+            ))}
+          </CardContent>
+        </Card>
+      
+      <div className=''>
+        <Card className="p-6">
+          <CardContent className="grid grid-cols-4 md:grid-cols-4 gap-4">
             <Card className=" bg-white/20 rounded-lg p-3">
               <Label className="justify-center text-4xl font-bold">{room.accumulated_sum}</Label>
               <Label className="justify-center text-sm text-white/70">Soma Atual</Label>
@@ -288,32 +334,19 @@ const Room: React.FC = () => {
             </Card>
 
           </CardContent>
-        )}
 
-        {room.pending_effect && (
-          <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
-            <div className="text-yellow-200 text-sm">
-              Efeito pendente: {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
-              {room.pending_effect.add ? `+${room.pending_effect.add}` : ''}
+          {room.pending_effect && (
+            <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+              <div className="text-yellow-200 text-sm">
+                Efeito pendente: {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
+                {room.pending_effect.add ? `+${room.pending_effect.add}` : ''}
+              </div>
             </div>
-          </div>
-        )}
-      </Card>
+          )}
+        </Card>
 
-      {/* Lista de jogadores */}
-      <Card className=" p-6">
-        <CardTitle className="text-lg font-semibold ps-6">Jogadores</CardTitle>
-        <CardContent className="grid grid-cols-2 md:grid-cols-2 gap-2">
-          {room.players.map((player) => (
-            <PlayerComponent
-              key={player.id}
-              player={player}
-              isCurrentTurn={player.id === room.current_turn}
-              isSelf={player.id === selfPlayer?.id}  // compara com selfPlayer
-            />
-          ))}
-        </CardContent>
-      </Card>
+        
+        
       </div>
 
       {/* Cartas do jogador */}
@@ -358,8 +391,8 @@ const Room: React.FC = () => {
                   key={i}
                   onClick={() => setJokerValue(i)}
                   className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     }`}
                 >
                   {i}

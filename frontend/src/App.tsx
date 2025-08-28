@@ -62,12 +62,12 @@ const App: React.FC = () => {
   }, [connect, connected, connecting]);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-black">
+    <div className="min-h-screen flex py-6 justify-center bg-black">
       
         <ConnectionStatus />
         <Notifications />
         
-        <div className="relative container w-max px-2 py-2">
+        <div className="flex">
 
           <main className="relative ">
             {currentView === 'lobby' ? <Lobby /> : <Room />}

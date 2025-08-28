@@ -12,8 +12,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
-import { HexagonBackground } from '@/components/animate-ui/buttons/backgrounds/hexagon';
-// importe os ícones que quiser usar; estes são apenas exemplos
+import LogoLoop from '@/components/ui-bits/logo-loop';
+import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
+
+const techLogos = [
+  { node: <SiReact />, title: "React", href: "https://react.dev" },
+  { node: <SiNextdotjs />, title: "Next.js", href: "https://nextjs.org" },
+  { node: <SiTypescript />, title: "TypeScript", href: "https://www.typescriptlang.org" },
+  { node: <SiTailwindcss />, title: "Tailwind CSS", href: "https://tailwindcss.com" },
+];
+
+// Alternative with image sources
+const imageLogos = [
+  { src: "src/assets/cards/default.png", alt: "Verso da carta" },
+];
+
+const imageLogos1 = [
+  { src: "src/assets/LOGO_SOMO.png", alt: "Verso da carta" },
+];
+
+const imageLogos2 = [
+  { src: "src/assets/cards/default.png", alt: "Verso da carta" },
+];
 
 const Lobby: React.FC = () => {
   const { connected, createRoom, joinRoom, nickname, setNickname, roomId, setRoomId } = useGameStore();
@@ -162,11 +182,50 @@ const Lobby: React.FC = () => {
       </div>
 
       {/* Instruções do jogo */}
-      <div className=''>
-          <div className='relative flex rounded-md items-end max-h-80 max-w-100 min-h-140 min-w-122 bg-[#FFD700] me-3 my-3'>
-          <HexagonBackground hexagonSize={30} className="absolute inset-0 flex items-center justify-center rounded-md mix-blend-difference" />
-          </div>
-      </div>
+      <div className='flex flex-col rounded-md justify-center py-4 max-h-140 max-w-122 min-h-140 min-w-120 bg-[#FFD700] me-3 my-3'>
+      <div className='items-center'>
+        <LogoLoop
+          logos={imageLogos}
+          speed={120}
+          direction="left"
+          logoHeight={110}
+          gap={40}
+          pauseOnHover
+          scaleOnHover
+          fadeOut
+          fadeOutColor="#FFD700"
+          ariaLabel="Technology partners"
+        />
+        </div>
+        <div className='items-center'>
+        <LogoLoop
+          logos={imageLogos1}
+          speed={120}
+          direction="right"
+          logoHeight={160}
+          gap={40}
+          pauseOnHover
+          scaleOnHover
+          fadeOut
+          fadeOutColor="#FFD700"
+          ariaLabel="Technology partners"
+        />
+        </div>
+        <div className='items-center'>
+        <LogoLoop
+        logos={imageLogos2}
+        speed={120}
+        direction="left"
+        logoHeight={110}
+        gap={40}
+        pauseOnHover
+        scaleOnHover
+        fadeOut
+        fadeOutColor="#FFD700"
+        ariaLabel="Technology partners"
+      />
+        </div>
+    </div>
       
     </div>
   );
