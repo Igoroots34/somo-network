@@ -280,14 +280,7 @@ const Room: React.FC = () => {
               </Button>
 
             )}
-            <div>
-              <button
-                onClick={() => setShowDice(true)}
-                className="w-32 bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black"
-              >
-                D20
-              </button>
-            </div>
+            
             <div className='space-x-2'>
               <Button variant="secondary"
                 onClick={toggleChat}
@@ -321,7 +314,14 @@ const Room: React.FC = () => {
           </CardContent>
         </Card>
         <Card className='w-1/4'>
-
+        <div>
+              <Button
+                onClick={() => setShowDice(true)}
+                className="w-32 bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black"
+              >
+                D20
+              </Button>
+            </div>
         </Card>
       </div>
 
