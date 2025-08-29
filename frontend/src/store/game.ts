@@ -18,7 +18,7 @@ interface GameStore extends GameState {
   passTurn: () => void;
   
   // Bot actions
-  addBot: (difficulty?: 'easy' | 'medium' | 'hard') => void;
+  addBot: (difficulty?: 'LOW' | 'MID' | 'HIGH') => void;
   
   // Chat actions
   sendChat: (message: string) => void;
@@ -134,7 +134,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   // Bot actions
-  addBot: (difficulty = 'easy') => {
+  addBot: (difficulty = 'LOW') => {
     const { room } = get();
     if (room) {
       gameActions.addBot(room.id, difficulty);

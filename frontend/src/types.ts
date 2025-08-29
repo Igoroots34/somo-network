@@ -87,7 +87,7 @@ export interface ChatAction {
 export interface AddBotAction {
   action: 'add_bot';
   room_id: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
+  difficulty?: 'LOW' | 'MID' | 'HIGH';
 }
 
 export type ClientAction = 

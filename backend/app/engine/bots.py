@@ -216,19 +216,19 @@ class BotManager:
     
     def __init__(self):
         self.strategies = {
-            "easy": RandomBotStrategy(),
-            "medium": GreedyBotStrategy(),
-            "hard": DefensiveBotStrategy()
+            "LOW": RandomBotStrategy(),
+            "MID": GreedyBotStrategy(),
+            "HIGH": DefensiveBotStrategy()
         }
         self.game_engine = GameEngine()
     
-    def add_bot_to_room(self, room: RoomState, difficulty: str = "easy") -> Optional[PlayerState]:
+    def add_bot_to_room(self, room: RoomState, difficulty: str = "LOW") -> Optional[PlayerState]:
         """
         Adiciona um bot à sala
         
         Args:
             room: Estado da sala
-            difficulty: Dificuldade do bot ("easy", "medium", "hard")
+            difficulty: Dificuldade do bot ("LOW", "MID", "HIGH")
             
         Returns:
             PlayerState do bot criado ou None se não foi possível adicionar
@@ -241,7 +241,7 @@ class BotManager:
         
         # Gera nickname único para o bot
         bot_number = len([p for p in room.players if p.is_bot]) + 1
-        difficulty_name = difficulty.capitalize()
+        difficulty_name = difficulty
         bot_nickname = f"Bot {difficulty_name} {bot_number}"
         
         # Verifica se o nickname já existe
@@ -276,27 +276,27 @@ class BotManager:
             return None
         
         # Determina a dificuldade baseada no nickname
-        difficulty = "easy"  # padrão
+        difficulty = "LOW"  # padrão
         if "MID" in bot_player.nickname:
-            difficulty = "medium"
+            difficulty = "MID"
         elif "HIGH" in bot_player.nickname:
-            difficulty = "hard"
+            difficulty = "HIGH"
         
-        strategy = self.strategies.get(difficulty, self.strategies["easy"])
+        strategy = self.strategies.get(difficulty, self.strategies["LOW"])
         return strategy.choose_action(room, bot_player, self.game_engine)
     
     def get_bot_count_by_difficulty(self, room: RoomState) -> Dict[str, int]:
         """Retorna contagem de bots por dificuldade na sala"""
-        counts = {"easy": 0, "medium": 0, "hard": 0}
+        counts = {"LOW": 0, "MID": 0, "HIGH": 0}
         
         for player in room.players:
             if player.is_bot:
                 if "LOW" in player.nickname:
-                    counts["easy"] += 1
+                    counts["LOW"] += 1
                 elif "MID" in player.nickname:
-                    counts["medium"] += 1
+                    counts["MID"] += 1
                 elif "HIGH" in player.nickname:
-                    counts["hard"] += 1
+                    counts["HIGH"] += 1
         
         return counts
 

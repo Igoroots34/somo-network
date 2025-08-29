@@ -83,7 +83,7 @@ class ChatAction(BaseModel):
 class AddBotAction(BaseModel):
     action: Literal["add_bot"] = "add_bot"
     room_id: str
-    difficulty: Literal["easy", "medium", "hard"] = "easy"
+    difficulty: Literal["LOW", "MID", "HIGH"] = "LOW"
 
 class Event(BaseModel):
     room: RoomState

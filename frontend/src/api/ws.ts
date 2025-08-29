@@ -191,7 +191,7 @@ export const gameActions = {
     });
   },
 
-  addBot: (roomId: string, difficulty: 'easy' | 'medium' | 'hard' = 'easy') => {
+  addBot: (roomId: string, difficulty: 'LOW' | 'MID' | 'HIGH' = 'LOW') => {
     wsClient.send({
       action: 'add_bot',
       room_id: roomId,

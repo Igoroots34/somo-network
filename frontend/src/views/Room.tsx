@@ -257,19 +257,19 @@ const Room: React.FC = () => {
           {isHost && room.players.length < room.max_players && (
             <div className="flex items-center space-x-2 ">
               <Button
-                onClick={() => addBot('easy')}
+                onClick={() => addBot('LOW')}
                 className="flex items-center justify-center px-4 py-2 bg-transparent border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-colors"
               >
                 LOW <Bot size={18} />
               </Button>
               <Button
-                onClick={() => addBot('medium')}
+                onClick={() => addBot('MID')}
                 className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
               >
                 MID <Bot size={18} />
               </Button>
               <Button
-                onClick={() => addBot('hard')}
+                onClick={() => addBot('HIGH')}
                 className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
               >
                 HIGH <Bot size={18} />
