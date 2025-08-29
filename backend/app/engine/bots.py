@@ -277,9 +277,9 @@ class BotManager:
         
         # Determina a dificuldade baseada no nickname
         difficulty = "easy"  # padrão
-        if "Medium" in bot_player.nickname:
+        if "MID" in bot_player.nickname:
             difficulty = "medium"
-        elif "Hard" in bot_player.nickname:
+        elif "HIGH" in bot_player.nickname:
             difficulty = "hard"
         
         strategy = self.strategies.get(difficulty, self.strategies["easy"])
@@ -291,11 +291,11 @@ class BotManager:
         
         for player in room.players:
             if player.is_bot:
-                if "Easy" in player.nickname:
+                if "LOW" in player.nickname:
                     counts["easy"] += 1
-                elif "Medium" in player.nickname:
+                elif "MID" in player.nickname:
                     counts["medium"] += 1
-                elif "Hard" in player.nickname:
+                elif "HIGH" in player.nickname:
                     counts["hard"] += 1
         
         return counts

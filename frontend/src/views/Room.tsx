@@ -95,7 +95,7 @@ const PlayerComponent: React.FC<{
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
     <Card
-  className={`p-4 ${
+  className={`p-2 ${
     isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"
   } ${isSelf ? "bg-" : ""}`}
 >
@@ -132,7 +132,7 @@ const PlayerComponent: React.FC<{
 
     <div className="flex items-center space-x-2">
       <span className="text-[14px] font-bold text-white/70">
-        <div className='bg-[#FFD700] px-1 rounded'>
+        <div className='bg-[#FFD700] px-1 rounded-[2px]'>
           <div className='text-black'>
             {player.hand_count}
           </div>
@@ -289,8 +289,9 @@ const Room: React.FC = () => {
       </Card>
       {/* Lista de jogadores */}
 
-      <Card className="p-6 w-250 ">
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className='flex gap-4'>
+      <Card className="py-2 w-2/3 ">
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {room.players.map((player) => (
               <PlayerComponent
                 key={player.id}
@@ -301,6 +302,10 @@ const Room: React.FC = () => {
             ))}
           </CardContent>
         </Card>
+        <Card className='w-1/3'>
+
+        </Card>
+      </div>
       
       <div className=''>
         <Card className="p-6">

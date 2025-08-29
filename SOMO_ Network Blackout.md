@@ -491,7 +491,7 @@ sequenceDiagram
 
 #### Backend Patterns
 - **Repository Pattern:** Room Manager como repositório de salas
-- **Strategy Pattern:** Diferentes estratégias de bot (Easy/Medium/Hard)
+- **Strategy Pattern:** Diferentes estratégias de bot (LOW/MID/HIGH)
 - **Observer Pattern:** WebSocket broadcasting para mudanças de estado
 - **Factory Pattern:** Criação de cartas e inicialização de jogos
 - **State Pattern:** Gerenciamento de estados do jogo

@@ -315,14 +315,14 @@ class TestBotManager:
         
         assert bot is not None
         assert bot.is_bot
-        assert "Easy" in bot.nickname
+        assert "LOW" in bot.nickname
         assert len(room.players) == 2
         
         # Adiciona bot médio
         bot2 = bot_manager.add_bot_to_room(room, "medium")
         
         assert bot2 is not None
-        assert "Medium" in bot2.nickname
+        assert "MID" in bot2.nickname
         assert len(room.players) == 3
     
     def test_bot_cannot_join_full_room(self):
