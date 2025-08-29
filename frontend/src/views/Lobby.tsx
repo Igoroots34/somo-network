@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useGameStore } from '../store/game';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,8 @@ import {
 import { Label } from '@/components/ui/label';
 import LogoLoop from '@/components/ui-bits/logo-loop';
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
+import LetterGlitch from '@/components/ui-bits/letter-glitch';
+import EncryptButton from '@/components/EncryptButton';
 
 const techLogos = [
   { node: <SiReact />, title: "React", href: "https://react.dev" },
@@ -35,6 +37,8 @@ const imageLogos2 = [
   { src: "src/assets/cards/default.png", alt: "Verso da carta" },
 ];
 
+
+
 const Lobby: React.FC = () => {
   const { connected, createRoom, joinRoom, nickname, setNickname, roomId, setRoomId } = useGameStore();
   
@@ -55,20 +59,27 @@ const Lobby: React.FC = () => {
     }
   };
 
+  const BackgroundGlitch = useMemo(() => (
+    <div className='relative border border-neutral-600 rounded-md justify-center h-145 w-125 me-3 my-3'>
+      
+      <LetterGlitch
+      glitchColors={['#FFD700', '#FFF800', '#FF9B00']}
+      glitchSpeed={50}
+      centerVignette={false}
+      outerVignette={true}
+      smooth={true}
+      />
+    </div>
+  ), []);
+
   return (
-    <div className="flex border border-gray-600 rounded-lg justify-center items-center">
+    <div className="flex border justify-center items-center bg-black border-neutral-600 rounded-lg">
       <div className="flex-none justify-center">
       <div className="flex flex-row justify-center gap-4 mb-4">
         <img
           className="w-24 h-24 object-contain"
           src="../src/assets/LOGO_SOMO.png"
           alt="Logo SOMO"
-        />
-        <Label className='text-[#FFD700]'>X</Label>
-        <img
-          className="w-24 h-24 object-contain"
-          src="../src/assets/LOGO_NB.png"
-          alt="Logo NB"
         />
       </div>
         {/* Tabs */}
@@ -143,13 +154,13 @@ const Lobby: React.FC = () => {
 
               </div>
 
-              <Button
+              <button
                 type="submit"
                 disabled={!connected || !nickname.trim()}
-                className="w-full text-lg rounded-lg my-4 py-6 px-6 bg-[#FFD700] text-black font-bold hover:bg-[#FFD700]/80"
+                className="w-fit"
               >
-                {connected ? 'Criar Sala' : 'Conectando...'}
-              </Button>
+                {connected ? <EncryptButton text="INICIAR SALA" autoStart /> : 'Conectando...'}
+              </button>
             </form>
           ) : (
             <form onSubmit={handleJoinRoom} className="space-y-4">
@@ -169,21 +180,31 @@ const Lobby: React.FC = () => {
                 />
               </div>
 
-              <Button
+              <button
                 type="submit"
                 disabled={!connected || !nickname.trim() || !roomId.trim()}
-                className="w-full text-lg rounded-lg my-4 py-6 px-6 bg-[#FFD700] text-black font-bold hover:bg-[#FFD700]/80"
+                className="w-fit"
               >
-                {connected ? 'Entrar na Sala' : 'Conectando...'}
-              </Button>
+                {connected ? <EncryptButton text="ENTRAR NA SALA" autoStart /> : 'Conectando...'}
+              </button>
             </form>
           )}
         </div>
       </div>
 
       {/* Instruções do jogo */}
-      <div className='flex flex-col rounded-md justify-center py-4 max-h-140 max-w-122 min-h-140 min-w-120 bg-[#FFD700] me-3 my-3'>
-      <div className='items-center'>
+      <div className='relative '>
+      
+        {BackgroundGlitch}
+      </div>
+      
+    </div>
+  );
+};
+
+export default Lobby;
+
+{/* <div className='items-center'>
         <LogoLoop
           logos={imageLogos}
           speed={120}
@@ -223,13 +244,4 @@ const Lobby: React.FC = () => {
         fadeOut
         fadeOutColor="#FFD700"
         ariaLabel="Technology partners"
-      />
-        </div>
-    </div>
-      
-    </div>
-  );
-};
-
-export default Lobby;
-
+      /> */}

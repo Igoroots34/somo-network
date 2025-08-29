@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { useGameStore, useIsMyTurn, useIsHost, useSelfPlayer } from '../store/game';
 import { CardComp } from '../types';
-import jokerImg from '../assets/cards/joker.png';
-import plus2Img from '../assets/cards/plus2.png';
-import times2Img from '../assets/cards/times2.png';
-import reset0Img from '../assets/cards/reset0.png';
-import reverseImg from '../assets/cards/reverse.png';
-import defaultImg from '../assets/cards/default.png';
-import card0Image from '../assets/cards/0.png';
-import card1Image from '../assets/cards/1.png';
-import card2Image from '../assets/cards/2.png';
-import card3Image from '../assets/cards/3.png';
-import card4Image from '../assets/cards/4.png';
-import card5Image from '../assets/cards/5.png';
-import card6Image from '../assets/cards/6.png';
-import card7Image from '../assets/cards/7.png';
-import card8Image from '../assets/cards/8.png';
-import card9Image from '../assets/cards/9.png';
-import { CircleArrowUp, CircleArrowDown, CircleX, RotateCcw, RotateCw, Cpu } from 'lucide-react';
+import jokerImg from '@/assets/cards/joker.png';
+import plus2Img from '@/assets/cards/plus2.png';
+import times2Img from '@/assets/cards/times2.png';
+import reset0Img from '@/assets/cards/reset0.png';
+import reverseImg from '@/assets/cards/reverse.png';
+import defaultImg from '@/assets/cards/default.png';
+import card0Image from '@/assets/cards/0.png';
+import card1Image from '@/assets/cards/1.png';
+import card2Image from '@/assets/cards/2.png';
+import card3Image from '@/assets/cards/3.png';
+import card4Image from '@/assets/cards/4.png';
+import card5Image from '@/assets/cards/5.png';
+import card6Image from '@/assets/cards/6.png';
+import card7Image from '@/assets/cards/7.png';
+import card8Image from '@/assets/cards/8.png';
+import card9Image from '@/assets/cards/9.png';
+import { CircleArrowUp, CircleArrowDown, CircleX, RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -28,6 +28,7 @@ import { Label } from '@/components/ui/label';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { Star } from '@/components/animate-ui/icons/star';
 import { Bot } from '@/components/animate-ui/icons/bot';
+import { DiceOverlay  } from "@/components/dice-roll-20";
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -95,57 +96,53 @@ const PlayerComponent: React.FC<{
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
     <Card
-  className={`p-2 ${
-    isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"
-  } ${isSelf ? "bg-" : ""}`}
->
-  <div className="flex items-center justify-between">
-    <div className="flex items-center">
-      <span
-        className={`flex items-center gap-2 text-[12px] font-medium ${
-          player.is_eliminated
-            ? "text-red-400 line-through"
-            : "text-[#FFD700]"
-        }`}
-      >
-        {player.nickname}
+      className={`p-2 ${isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"
+        } ${isSelf ? "bg-" : ""}`}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <span
+            className={`flex items-center gap-2 truncate text-[12px] font-medium ${player.is_eliminated
+              ? "text-red-400 line-through"
+              : "text-[#FFD700]"
+              }`}
+          >
+            {player.nickname}
 
-        {/* Ícone do Bot */}
-        {player.is_bot && (
-          <Bot
-            className={`w-4 h-4 ${
-              isCurrentTurn ? "animate-bounce text-cyan-400" : "text-gray-400"
-            }`}
-          />
-        )}
+            {/* Ícone do Bot */}
+            {player.is_bot && (
+              <Bot
+                className={`w-4 h-4 ${isCurrentTurn ? "animate-bounce text-cyan-400" : "text-gray-400"
+                  }`}
+              />
+            )}
 
-        {/* Estrela se for o próprio player */}
-        {isSelf && (
-          <Star
-            className={`w-4 h-4 ${
-              isCurrentTurn ? "animate-pulse text-yellow-400" : "text-gray-400"
-            }`}
-          />
-        )}
-      </span>
-    </div>
+            {/* Estrela se for o próprio player */}
+            {isSelf && (
+              <Star
+                className={`w-4 h-4 ${isCurrentTurn ? "animate-pulse text-yellow-400" : "text-gray-400"
+                  }`}
+              />
+            )}
+          </span>
+        </div>
 
-    <div className="flex items-center space-x-2">
-      <span className="text-[14px] font-bold text-white/70">
-        <div className='bg-[#FFD700] px-1 rounded-[2px]'>
-          <div className='text-black'>
-            {player.hand_count}
+        <div className="flex items-center space-x-2">
+          <span className="text-[14px] font-bold text-white/70">
+            <div className='bg-[#FFD700] px-1 rounded-[2px]'>
+              <div className='text-black'>
+                {player.hand_count}
+              </div>
+            </div>
+          </span>
+          <div className="flex space-x-1">
+            {Array.from({ length: player.tokens }).map((_, i) => (
+              <Cpu key={i} className="w-4 text-green-400" />
+            ))}
           </div>
         </div>
-      </span>
-      <div className="flex space-x-1">
-        {Array.from({ length: player.tokens }).map((_, i) => (
-          <Cpu key={i} className="w-4 text-green-400" />
-        ))}
       </div>
-    </div>
-  </div>
-</Card>
+    </Card>
 
   );
 };
@@ -170,6 +167,9 @@ const Room: React.FC = () => {
 
   const [selectedCard, setSelectedCard] = useState<CardComp | null>(null);
   const [jokerValue, setJokerValue] = useState<number>(0);
+
+  const [showDice, setShowDice] = useState(false);
+  const [diceResult, setDiceResult] = useState<number | null>(null);
 
   if (!room) {
     return (
@@ -224,73 +224,91 @@ const Room: React.FC = () => {
   return (
     <div className="w-7xl space-y-4">
       {/* Header da sala */}
-      
-      <Card className='p-6'>
-        <div className="flex justify-between items-center">
-          <img
-            className="w-20 h-20 object-contain"
-            src="../src/assets/LOGO_SOMO.png"
-            alt="Logo SOMO"
-          />
-          <div className='flex flex-col'>
-           <div>
-           Sala {room.id}
-            <CopyButton variant={'ghost'} content={room.id} size="sm"></CopyButton>
-           </div>
 
-            {room.players.length}/{room.max_players} jogadores
+      <Card className='p-2'>
+        <div className="flex justify-between items-center">
+          <div className='flex gap-4'>
+            <img
+              className="w-20 object-contain"
+              src="../src/assets/LOGO_SOMO.png"
+              alt="Logo SOMO"
+            />
+            <div className='flex flex-col'>
+
+              <div>
+                Sala {room.id}
+                <CopyButton variant={'ghost'} content={room.id} size="sm"></CopyButton>
+              </div>
+
+              <div className='text-xs'>
+                {room.players.length}/{room.max_players} jogadores
+              </div>
+            </div>
           </div>
-          <div className='space-x-2'>
-          <Button variant="secondary"
-            onClick={toggleChat}
-            className=""
-          >
-            Chat {showChat ? <CircleArrowDown size={18} /> : <CircleArrowUp size={18} />}
-          </Button>
-          <Button variant="destructive"
-            onClick={() => setView('lobby')}
-            className=""
-          >
-            Sair <CircleX size={18} />
-          </Button>
-          </div>
-          {isHost && room.players.length < room.max_players && (
-            <div className="flex items-center space-x-2 ">
+
+
+          <div className='flex gap-6'>
+            {isHost && room.players.length < room.max_players && (
+              <div className="flex items-center space-x-2 ">
+                <Button
+                  onClick={() => addBot('LOW')}
+                  className="flex items-center justify-center px-4 py-2 bg-transparent border border-[#32CD32] text-[#32CD32] hover:bg-[#32CD32] hover:text-black transition-colors"
+                >
+                  LOW <Bot size={18} />
+                </Button>
+                <Button
+                  onClick={() => addBot('MID')}
+                  className=" flex items-center justify-center px-4 py-2 bg-transparent border border-[#FFA500] text-[#FFA500] hover:bg-[#FFA500] hover:text-black transition-colors"
+                >
+                  MID <Bot size={18} />
+                </Button>
+                <Button
+                  onClick={() => addBot('HIGH')}
+                  className="flex items-center justify-center px-4 py-2 bg-transparent border border-[#FF4500] text-[#FF4500] hover:bg-[#FF4500] hover:text-black transition-colors"
+                >
+                  HIGH <Bot size={18} />
+                </Button>
+              </div>
+            )}
+            {isHost && (
               <Button
-                onClick={() => addBot('LOW')}
-                className="flex items-center justify-center px-4 py-2 bg-transparent border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black transition-colors"
+                onClick={startGame}
+                disabled={room.players.length < 2}
+                className="w-32 bg-[#FFD700] hover:bg-[#FFD700]/80"
               >
-                LOW <Bot size={18} />
+                INICIAR <Dice5 size={18} />
               </Button>
-              <Button
-                onClick={() => addBot('MID')}
-                className=" flex items-center justify-center px-4 py-2 bg-transparent border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-colors"
+
+            )}
+            <div>
+              <button
+                onClick={() => setShowDice(true)}
+                className="w-32 bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black"
               >
-                MID <Bot size={18} />
+                D20
+              </button>
+            </div>
+            <div className='space-x-2'>
+              <Button variant="secondary"
+                onClick={toggleChat}
+                className=""
+              >
+                {showChat ? <MessageCircleOff size={18} /> : <MessageCircle size={18} />}
               </Button>
-              <Button
-                onClick={() => addBot('HIGH')}
-                className="flex items-center justify-center px-4 py-2 bg-transparent border border-red-400 text-red-400 hover:bg-red-400 hover:text-black transition-colors"
+              <Button variant="destructive"
+                onClick={() => setView('lobby')}
+                className=""
               >
-                HIGH <Bot size={18} />
+                <X size={18} />
               </Button>
             </div>
-          )}
-          {isHost && (
-            <Button
-              onClick={startGame}
-              disabled={room.players.length < 2}
-              className="w-12 bg-[#FFD700] hover:bg-[#FFD700]/80"
-            >
-              Play
-            </Button>
-          )}
+          </div>
         </div>
       </Card>
       {/* Lista de jogadores */}
 
       <div className='flex gap-4'>
-      <Card className="py-2 w-2/3 ">
+        <Card className="py-2 w-3/4 ">
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {room.players.map((player) => (
               <PlayerComponent
@@ -302,11 +320,11 @@ const Room: React.FC = () => {
             ))}
           </CardContent>
         </Card>
-        <Card className='w-1/3'>
+        <Card className='w-1/4'>
 
         </Card>
       </div>
-      
+
       <div className=''>
         <Card className="p-6">
           <CardContent className="grid grid-cols-4 md:grid-cols-4 gap-4">
@@ -350,8 +368,8 @@ const Room: React.FC = () => {
           )}
         </Card>
 
-        
-        
+
+
       </div>
 
       {/* Cartas do jogador */}
@@ -422,7 +440,16 @@ const Room: React.FC = () => {
           </div>
         </div>
       )}
+      <DiceOverlay
+        open={showDice}
+        onClose={() => setShowDice(false)}
+        onResult={(n) => {
+          setDiceResult(n);
+          // if (isHost) setRoundLimit(n); // se quiser integrar no jogo
+        }}
+      />
     </div>
+
   );
 };
 

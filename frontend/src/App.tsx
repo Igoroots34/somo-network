@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useGameStore } from './store/game';
 import Lobby from './views/Lobby';
 import Room from './views/Room';
+import FaultyTerminal from './components/ui-bits/fault';
+
 
 // Componente de notificações
 const Notifications: React.FC = () => {
   const { notifications, removeNotification } = useGameStore();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-4 z-50 text-[5px] space-y-2">
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`p-4 shadow-lg max-w-sm transform transition-all duration-300 ${
+          className={`p-4 shadow-lg max-w-sm text-[5px] rounded transform transition-all duration-300 ${
             notification.type === 'success' ? 'bg-[#FFD700] text-black' :
             notification.type === 'error' ? 'bg-red-500 text-white' :
             notification.type === 'warning' ? 'bg-yellow-500 text-black' :
@@ -42,8 +44,8 @@ const ConnectionStatus: React.FC = () => {
 
   return (
     <div className="fixed top-4 left-4 z-40">
-      <div className={`px-4 py-2 rounded-lg text-white text-sm font-medium ${
-        connecting ? 'bg-yellow-500' : 'bg-red-500'
+      <div className={`px-4 py-2 rounded-lg  text-sm font-medium ${
+        connecting ? 'bg-[#FFD700] text-black' : 'bg-red-500'
       }`}>
         {connecting ? 'Conectando...' : 'Desconectado'}
       </div>
@@ -54,26 +56,67 @@ const ConnectionStatus: React.FC = () => {
 const App: React.FC = () => {
   const { currentView, connect, connected, connecting } = useGameStore();
 
+  // evita chamar connect mais de uma vez mesmo em StrictMode
+  const didInit = useRef(false);
+
   useEffect(() => {
-    // Conecta automaticamente ao carregar a aplicação
+    if (didInit.current) return;
+    didInit.current = true;
+
     if (!connected && !connecting) {
       connect().catch(console.error);
     }
-  }, [connect, connected, connecting]);
+  }, []); // <-- sem dependências!
+
+  // evita re-render do fundo a cada clique
+  const Background = useMemo(() => (
+    <div className="absolute inset-0 -z-10">
+      <FaultyTerminal
+        scale={3}
+        gridMul={[2, 1]}
+        digitSize={1.2}
+        timeScale={1}
+        pause={false}
+        scanlineIntensity={1}
+        glitchAmount={1}
+        flickerAmount={1}
+        noiseAmp={1}
+        chromaticAberration={0}
+        dither={0}
+        curvature={0}
+        tint="#FFD700"
+        mouseReact
+        mouseStrength={0.5}
+        pageLoadAnimation={false}
+        brightness={1}
+      />
+    </div>
+  ), []);
 
   return (
-    <div className="min-h-screen flex py-6 justify-center bg-black">
-      
+    <div
+      className={
+        `relative min-h-screen overflow-hidden
+         ${currentView === 'lobby'
+           ? 'flex items-center justify-center'
+           : 'flex items-start justify-center pt-6'}`
+      }
+    >
+      {Background}
+
+      <div className="relative z-10 w-full max-w-6xl px-4">
         <ConnectionStatus />
         <Notifications />
-        
-        <div className="flex">
 
-          <main className="relative ">
-            {currentView === 'lobby' ? <Lobby /> : <Room />}
-          </main>
-        </div>
-      
+        <main className={currentView === 'lobby'
+          ? 'flex items-center justify-center'
+          : 'flex items-start justify-center'}
+        >
+          {currentView === 'lobby'
+            ? <div className="w-full flex items-center justify-center"><Lobby /></div>
+            : <div className="w-7xl flex items-start justify-center"><Room /></div>}
+        </main>
+      </div>
     </div>
   );
 };
