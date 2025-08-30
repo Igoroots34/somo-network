@@ -51,12 +51,12 @@ function stableFaceQuat(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) {
 
 /* ====================== Chão + Paredes ====================== */
 
-function Floor({ y = -1.2, w = 11 , z = 10 }: { y?: number; w?: number; z?: number }) {
+function Floor({ y = -1.2, w = 6 , z = 4.5 }: { y?: number; w?: number; z?: number }) {
   const [ref] = usePlane(() => ({
     position: [0, y, 0],
     rotation: [-Math.PI / 2, 0, 0],
     type: "Static",
-    material: { restitution: 0.2, friction: 0.9 },
+    material: { restitution: 0.9, friction: 0.05 }, // was 0.2 / 0.9
   }));
   return (
     <mesh ref={ref as any} rotation={[-Math.PI / 2, 0, 0]} position={[0, y, 0]} receiveShadow>
@@ -66,13 +66,13 @@ function Floor({ y = -1.2, w = 11 , z = 10 }: { y?: number; w?: number; z?: numb
   );
 }
 
-function Walls({ w = 6, z = 4 }: { w?: number; z?: number }) {
+function Walls({ w = 6, z = 4.5 }: { w?: number; z?: number }) {
   // esquerda/direita
-  usePlane(() => ({ position: [-w / 2, 0, 0], rotation: [0, Math.PI / 2, 0], type: "Static", material: { restitution: 0.2, friction: 0.9 } }));
-  usePlane(() => ({ position: [ w / 2, 0, 0], rotation: [0,-Math.PI / 2, 0], type: "Static", material: { restitution: 0.2, friction: 0.9 } }));
+  usePlane(() => ({ position: [-w / 2, 0, 0], rotation: [0, Math.PI / 2, 0], type: "Static", material: { restitution: 0.95, friction: 0.02 } }));
+  usePlane(() => ({ position: [ w / 2, 0, 0], rotation: [0,-Math.PI / 2, 0], type: "Static", material: { restitution: 0.95, friction: 0.02 } }));
   // frente/trás
-  usePlane(() => ({ position: [0, 0,  z / 2], rotation: [0, Math.PI, 0], type: "Static", material: { restitution: 0.2, friction: 0.9 } }));
-  usePlane(() => ({ position: [0, 0, -z / 2], rotation: [0, 0, 0],       type: "Static", material: { restitution: 0.2, friction: 0.9 } }));
+  usePlane(() => ({ position: [0, 0,  z / 2], rotation: [0, Math.PI, 0], type: "Static", material: { restitution: 0.95, friction: 0.02 } }));
+  usePlane(() => ({ position: [0, 0, -z / 2], rotation: [0, 0, 0],       type: "Static", material: { restitution: 0.95, friction: 0.02 } }));
   return null;
 }
 
@@ -99,12 +99,12 @@ function D20Mesh({
   const [ref, api] = useConvexPolyhedron(() => ({
     mass: 1,
     args: [vertices, faces],
-    material: { restitution: 0.25, friction: 1 }, // menos pulo, mais atrito
-    linearDamping: 0.1,
-    angularDamping: 0.25,
+    material: { restitution: 0.9, friction: 0.3 }, // menos pulo, mais atrito
+    linearDamping: 0.06,
+    angularDamping: 0.06,
     allowSleep: true,
-    sleepSpeedLimit: 0.25,
-    sleepTimeLimit: 0.2,
+    sleepSpeedLimit: 0.22,
+    sleepTimeLimit: 0.9,
     position: [0, 0.6, 0],
   }));
 
@@ -322,7 +322,7 @@ export default function D20BounceCard({
         <Canvas
           shadows
           // câmera aérea (top-down)
-          camera={{ position: [0, 6, 0.001], fov: 25, near: 0.1, far: 100 }}
+          camera={{ position: [0, 6, 0.001], fov: 35, near: 0.1, far: 100 }}
           onCreated={({ gl, camera }) => {
             gl.setClearColor("#000000", 0);
             camera.lookAt(0, 0, 0);
