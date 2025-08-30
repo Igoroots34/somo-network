@@ -18,17 +18,15 @@ import card7Image from '@/assets/cards/7.png';
 import card8Image from '@/assets/cards/8.png';
 import card9Image from '@/assets/cards/9.png';
 import { RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { Star } from '@/components/animate-ui/icons/star';
 import { Bot } from '@/components/animate-ui/icons/bot';
-import { DiceD20ButtonPhysics, DiceD20OverlayPhysics } from "@/components/dice-roll-20";
+
+// ✅ use só UMA versão do dado
+import D20BounceCard from '@/components/dice-roll-20'; // ajuste o path se salvou com outro nome
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -40,8 +38,7 @@ const numberImages: Record<number, string> = {
   6: card6Image,
   7: card7Image,
   8: card8Image,
-  9: card9Image
-  // … continue para todos os números válidos
+  9: card9Image,
 };
 
 // Componente para renderizar uma carta
@@ -96,33 +93,22 @@ const PlayerComponent: React.FC<{
 }> = ({ player, isCurrentTurn, isSelf }) => {
   return (
     <Card
-      className={`p-2 ${isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"
-        } ${isSelf ? "bg-" : ""}`}
+      className={`p-2 ${isCurrentTurn ? "border border-[#FFD700]" : "bg-transparent"} ${isSelf ? "bg-" : ""}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <span
-            className={`flex items-center gap-2 truncate text-[12px] font-medium ${player.is_eliminated
-              ? "text-red-400 line-through"
-              : "text-[#FFD700]"
+            className={`flex items-center gap-2 truncate text-[12px] font-medium ${player.is_eliminated ? "text-red-400 line-through" : "text-[#FFD700]"
               }`}
           >
             {player.nickname}
 
-            {/* Ícone do Bot */}
             {player.is_bot && (
-              <Bot
-                className={`w-4 h-4 ${isCurrentTurn ? "animate-bounce text-cyan-400" : "text-gray-400"
-                  }`}
-              />
+              <Bot className={`w-4 h-4 ${isCurrentTurn ? "animate-bounce text-cyan-400" : "text-gray-400"}`} />
             )}
 
-            {/* Estrela se for o próprio player */}
             {isSelf && (
-              <Star
-                className={`w-4 h-4 ${isCurrentTurn ? "animate-pulse text-yellow-400" : "text-gray-400"
-                  }`}
-              />
+              <Star className={`w-4 h-4 ${isCurrentTurn ? "animate-pulse text-yellow-400" : "text-gray-400"}`} />
             )}
           </span>
         </div>
@@ -143,7 +129,6 @@ const PlayerComponent: React.FC<{
         </div>
       </div>
     </Card>
-
   );
 };
 
@@ -168,19 +153,17 @@ const Room: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<CardComp | null>(null);
   const [jokerValue, setJokerValue] = useState<number>(0);
 
+  // ====== Dado (overlay) ======
   const [showDice, setShowDice] = useState(false);
+  const [rollTrigger, setRollTrigger] = useState(0);
 
+  // Abre/rola automaticamente quando o backend atualiza o round_limit
   useEffect(() => {
-    if (room?.game_started && typeof room.round_limit === "number") {
+    if (room?.game_started && typeof room?.round_limit === 'number') {
       setShowDice(true);
+      setRollTrigger((t) => t + 1); // dispara rolagem automática
     }
   }, [room?.round_limit, room?.game_started]);
-
-  const FACE_TO_VALUE = [
-    20, 5, 12, 3, 16, 7, 1, 9, 14, 2,
-    18, 6, 11, 4, 15, 8, 19, 10, 17, 13
-  ];
-
 
   if (!room) {
     return (
@@ -195,11 +178,9 @@ const Room: React.FC = () => {
 
     if (card.kind === 'joker') {
       setSelectedCard(card);
-      // Mostra modal para escolher valor
     } else if (card.kind === 'number') {
       playCard(card.id);
     } else {
-      // Carta especial
       const specialType = card.kind as 'plus2' | 'times2' | 'reset0' | 'reverse';
       playSpecial(card.id, specialType);
     }
@@ -219,15 +200,11 @@ const Room: React.FC = () => {
     if (card.kind === 'number') {
       return room.accumulated_sum + (card.value || 0) <= room.round_limit;
     } else if (card.kind === 'joker') {
-      // Joker pode ser jogado se algum valor 0-9 for válido
       for (let i = 0; i <= 9; i++) {
-        if (room.accumulated_sum + i <= room.round_limit) {
-          return true;
-        }
+        if (room.accumulated_sum + i <= room.round_limit) return true;
       }
       return false;
     } else {
-      // Cartas especiais sempre podem ser jogadas
       return true;
     }
   };
@@ -235,7 +212,6 @@ const Room: React.FC = () => {
   return (
     <div className="w-7xl space-y-4">
       {/* Header da sala */}
-
       <Card className='p-2'>
         <div className="flex justify-between items-center">
           <div className='flex gap-4'>
@@ -245,18 +221,15 @@ const Room: React.FC = () => {
               alt="Logo SOMO"
             />
             <div className='flex flex-col'>
-
               <div>
                 Sala {room.id}
-                <CopyButton variant={'ghost'} content={room.id} size="sm"></CopyButton>
+                <CopyButton variant={'ghost'} content={room.id} size="sm" />
               </div>
-
               <div className='text-xs'>
                 {room.players.length}/{room.max_players} jogadores
               </div>
             </div>
           </div>
-
 
           <div className='flex gap-6'>
             {isHost && room.players.length < room.max_players && (
@@ -281,11 +254,12 @@ const Room: React.FC = () => {
                 </Button>
               </div>
             )}
+
             {isHost && (
               <Button
                 onClick={() => {
-                  startGame();        // chama o backend -> cria deck, distribui, define turnos e reset_round (D20)
-                  // NÃO precisamos mais forçar setShowDice aqui; o useEffect acima abrirá quando round_limit chegar
+                  startGame(); // backend reseta rodada e define round_limit
+                  // overlay abrirá sozinho quando round_limit mudar (useEffect)
                 }}
                 disabled={room.players.length < 2}
                 className="w-32 bg-[#FFD700] hover:bg-[#FFD700]/80"
@@ -295,88 +269,98 @@ const Room: React.FC = () => {
             )}
 
             <div className='space-x-2'>
-              <Button variant="secondary"
-                onClick={toggleChat}
-                className=""
-              >
+              <Button variant="secondary" onClick={toggleChat}>
                 {showChat ? <MessageCircleOff size={18} /> : <MessageCircle size={18} />}
               </Button>
-              <Button variant="destructive"
-                onClick={() => setView('lobby')}
-                className=""
-              >
+              <Button variant="destructive" onClick={() => setView('lobby')}>
                 <X size={18} />
               </Button>
             </div>
           </div>
         </div>
       </Card>
+
       {/* Lista de jogadores */}
-
       <div className='flex gap-4'>
-        <Card className="py-2 w-3/4 ">
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {room.players.map((player) => (
-              <PlayerComponent
-                key={player.id}
-                player={player}
-                isCurrentTurn={player.id === room.current_turn}
-                isSelf={player.id === selfPlayer?.id}  // compara com selfPlayer
-              />
-            ))}
-          </CardContent>
-        </Card>
-        <Card className='w-1/4'>
-            <Label className="justify-center text-4xl font-bold">{room.round_limit}</Label>
-        </Card>
-      </div>
 
-      <div className=''>
-        <Card className="p-2 w-3/4">
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <Card className=" bg-white/20 rounded-lg p-3">
-              <Label className="justify-center text-4xl font-bold">{room.accumulated_sum}</Label>
-              <Label className="justify-center text-sm text-white/70">Soma Atual</Label>
-            </Card>
-            <Card className="bg-white/20 rounded-lg p-3">
-              <Label className="justify-center text-4xl font-bold">{room.deck_count}</Label>
-              <Label className="justify-center text-sm text-white/70">Cartas no Baralho</Label>
-            </Card>
-            <Card className="bg-white/20 rounded-lg p-3 flex justify-center items-center">
-              <Label className="flex justify-center items-center gap-2 text-lg">
-                {room.direction ? (
-                  <>
-                    <RotateCw className="w-5 h-5" />
-                    Horário
-                  </>
-                ) : (
-                  <>
-                    <RotateCcw className="w-5 h-5" />
-                    Anti-horário
-                  </>
+        <div className='w-3/4 space-y-4'>
+          <Card className="py-2 flex justify-center h-30">
+            <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {room.players.map((player) => (
+                <PlayerComponent
+                  key={player.id}
+                  player={player}
+                  isCurrentTurn={player.id === room.current_turn}
+                  isSelf={player.id === selfPlayer?.id}
+                />
+              ))}
+            </CardContent>
+          </Card>
+          <Card className="p-2 flex justify-centerh-30 w-full">
+            <CardContent className="flex h-fit gap-2">
+              <Card className="flex flex-row-reverse justify-between p-3 bg-[#FFD700] h-24 w-1/4">
+                <Label className="justify-center text-4xl text-black font-bold">{room.accumulated_sum}</Label>
+                <Label className="justify-center text-sm text-black/70">Soma Atual</Label>
+              </Card>
+              <Card className="flex flex-row-reverse justify-between p-3 bg-black h-24 w-1/4">
+                <Label className="justify-center text-4xl font-bold">{room.deck_count}</Label>
+                <Label className="justify-center text-sm text-black/70">Cartas no Baralho</Label>
+              </Card>
+              <Card className="bg-black h-24 flex flex-row-reverse p-3 justify-center items-center w-1/4">
+                <Label className="flex justify-center items-center gap-2 text-lg">
+                  {room.direction ? (
+                    <>
+                      <RotateCw className="w-5 h-5" />
+                      Horário
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="w-5 h-5" />
+                      Anti-horário
+                    </>
+                  )}
+                </Label>
+              </Card>
+              <Card className='bg-black w-1/4 h-24 flex flex-row-reverse justify-center p-3'>
+                {room.pending_effect && (
+                  <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+                    <div className="text-yellow-200 text-sm">
+                      Efeito pendente: {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
+                      {room.pending_effect.add ? `+${room.pending_effect.add}` : ''}
+                    </div>
+                  </div>
                 )}
-              </Label>
-            </Card>
+                <Label className="justify-center text-sm text-white/70">Efeito</Label>
+              </Card>
+            </CardContent>
 
-          </CardContent>
 
-          {room.pending_effect && (
-            <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
-              <div className="text-yellow-200 text-sm">
-                Efeito pendente: {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
-                {room.pending_effect.add ? `+${room.pending_effect.add}` : ''}
-              </div>
-            </div>
-          )}
+          </Card>
+        </div>
+
+        {/* Painel lateral com o limite da rodada (sem renderizar o dado aqui) */}
+        <Card className='w-1/4 p-3 flex flex-col gap-2'>
+          <div className="inset-0 z-[60] flex items-center h-[100%] justify-center backdrop-blur-sm">
+            <D20BounceCard
+              targetValue={room.round_limit}
+              externalTrigger={rollTrigger}
+              interactive={false}
+              onRevealed={() => {
+                // espera 1.2s depois que o número aparece e fecha
+                setTimeout(() => setShowDice(false), 1200);
+              }}
+            />
+          </div>
+
         </Card>
-
-
-
       </div>
+
+      {/* Painel de status */}
+
 
       {/* Cartas do jogador */}
       {room.game_started && selfHand.length > 0 && (
-        <Card className=" p-6">
+        <Card className="flex p-6">
           <CardContent className="flex justify-between items-center mb-4">
             <CardTitle className="text-lg font-semibold">Suas Cartas</CardTitle>
             {isMyTurn && (
@@ -415,9 +399,7 @@ const Room: React.FC = () => {
                 <button
                   key={i}
                   onClick={() => setJokerValue(i)}
-                  className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                  className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     }`}
                 >
                   {i}
@@ -441,19 +423,12 @@ const Room: React.FC = () => {
             </div>
           </div>
         </div>
-
       )}
-      {/* 🎲 Overlay do D20 "espelhando" o limite do backend */}
-      <DiceD20OverlayPhysics
-        open={showDice}
-        onClose={() => setShowDice(false)}
-        onResult={() => setShowDice(false)}
-  // mostra exatamente o limite do backend
-      />
-    </div>
 
+      {/* 🎲 Overlay do D20 (automático) */}
+
+    </div>
   );
 };
 
 export default Room;
-
