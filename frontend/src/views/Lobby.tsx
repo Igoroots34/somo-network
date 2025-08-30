@@ -12,30 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
-import LogoLoop from '@/components/ui-bits/logo-loop';
-import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss } from 'react-icons/si';
 import LetterGlitch from '@/components/ui-bits/letter-glitch';
 import EncryptButton from '@/components/EncryptButton';
-
-const techLogos = [
-  { node: <SiReact />, title: "React", href: "https://react.dev" },
-  { node: <SiNextdotjs />, title: "Next.js", href: "https://nextjs.org" },
-  { node: <SiTypescript />, title: "TypeScript", href: "https://www.typescriptlang.org" },
-  { node: <SiTailwindcss />, title: "Tailwind CSS", href: "https://tailwindcss.com" },
-];
-
-// Alternative with image sources
-const imageLogos = [
-  { src: "src/assets/cards/default.png", alt: "Verso da carta" },
-];
-
-const imageLogos1 = [
-  { src: "src/assets/LOGO_SOMO.png", alt: "Verso da carta" },
-];
-
-const imageLogos2 = [
-  { src: "src/assets/cards/default.png", alt: "Verso da carta" },
-];
 
 
 
@@ -155,7 +133,6 @@ const Lobby: React.FC = () => {
               </div>
 
               <button
-                type="submit"
                 disabled={!connected || !nickname.trim()}
                 className="w-fit"
               >
@@ -181,7 +158,6 @@ const Lobby: React.FC = () => {
               </div>
 
               <button
-                type="submit"
                 disabled={!connected || !nickname.trim() || !roomId.trim()}
                 className="w-fit"
               >

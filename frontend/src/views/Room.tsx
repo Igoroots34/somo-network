@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGameStore, useIsMyTurn, useIsHost, useSelfPlayer } from '../store/game';
 import { CardComp } from '../types';
 import jokerImg from '@/assets/cards/joker.png';
@@ -17,7 +17,7 @@ import card6Image from '@/assets/cards/6.png';
 import card7Image from '@/assets/cards/7.png';
 import card8Image from '@/assets/cards/8.png';
 import card9Image from '@/assets/cards/9.png';
-import { CircleArrowUp, CircleArrowDown, CircleX, RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5 } from 'lucide-react';
+import { RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -28,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { Star } from '@/components/animate-ui/icons/star';
 import { Bot } from '@/components/animate-ui/icons/bot';
-import { DiceOverlay  } from "@/components/dice-roll-20";
+import { DiceD20ButtonPhysics, DiceD20OverlayPhysics } from "@/components/dice-roll-20";
 
 const numberImages: Record<number, string> = {
   0: card0Image,
@@ -169,7 +169,18 @@ const Room: React.FC = () => {
   const [jokerValue, setJokerValue] = useState<number>(0);
 
   const [showDice, setShowDice] = useState(false);
-  const [diceResult, setDiceResult] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (room?.game_started && typeof room.round_limit === "number") {
+      setShowDice(true);
+    }
+  }, [room?.round_limit, room?.game_started]);
+
+  const FACE_TO_VALUE = [
+    20, 5, 12, 3, 16, 7, 1, 9, 14, 2,
+    18, 6, 11, 4, 15, 8, 19, 10, 17, 13
+  ];
+
 
   if (!room) {
     return (
@@ -272,15 +283,17 @@ const Room: React.FC = () => {
             )}
             {isHost && (
               <Button
-                onClick={startGame}
+                onClick={() => {
+                  startGame();        // chama o backend -> cria deck, distribui, define turnos e reset_round (D20)
+                  // NÃO precisamos mais forçar setShowDice aqui; o useEffect acima abrirá quando round_limit chegar
+                }}
                 disabled={room.players.length < 2}
                 className="w-32 bg-[#FFD700] hover:bg-[#FFD700]/80"
               >
                 INICIAR <Dice5 size={18} />
               </Button>
-
             )}
-            
+
             <div className='space-x-2'>
               <Button variant="secondary"
                 onClick={toggleChat}
@@ -314,27 +327,16 @@ const Room: React.FC = () => {
           </CardContent>
         </Card>
         <Card className='w-1/4'>
-        <div>
-              <Button
-                onClick={() => setShowDice(true)}
-                className="w-32 bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black"
-              >
-                D20
-              </Button>
-            </div>
+            <Label className="justify-center text-4xl font-bold">{room.round_limit}</Label>
         </Card>
       </div>
 
       <div className=''>
-        <Card className="p-6">
-          <CardContent className="grid grid-cols-4 md:grid-cols-4 gap-4">
+        <Card className="p-2 w-3/4">
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <Card className=" bg-white/20 rounded-lg p-3">
               <Label className="justify-center text-4xl font-bold">{room.accumulated_sum}</Label>
               <Label className="justify-center text-sm text-white/70">Soma Atual</Label>
-            </Card>
-            <Card className="bg-white/20 rounded-lg p-3">
-              <Label className="justify-center text-4xl font-bold">{room.round_limit}</Label>
-              <Label className="justify-center text-sm text-white/70">Limite</Label>
             </Card>
             <Card className="bg-white/20 rounded-lg p-3">
               <Label className="justify-center text-4xl font-bold">{room.deck_count}</Label>
@@ -439,14 +441,14 @@ const Room: React.FC = () => {
             </div>
           </div>
         </div>
+
       )}
-      <DiceOverlay
+      {/* 🎲 Overlay do D20 "espelhando" o limite do backend */}
+      <DiceD20OverlayPhysics
         open={showDice}
         onClose={() => setShowDice(false)}
-        onResult={(n) => {
-          setDiceResult(n);
-          // if (isHost) setRoundLimit(n); // se quiser integrar no jogo
-        }}
+        onResult={() => setShowDice(false)}
+  // mostra exatamente o limite do backend
       />
     </div>
 
