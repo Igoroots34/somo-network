@@ -49,7 +49,8 @@ const initialState: GameState = {
   notifications: [],
   nickname: '',
   roomId: '',
-  selfId: ''
+  selfId: '',
+  playedCards: []
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -208,16 +209,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
         break;
 
-      case 'round_started':
-        state.addNotification('info', `Nova rodada! Limite: ${event.limit}`);
-        break;
+        case 'round_started':
+          state.addNotification('info', `Nova rodada! Limite: ${event.limit}`);
+          set({ playedCards: [] }); // limpa a mesa
+          break;
 
-      case 'card_played':
-        const player = state.room?.players.find(p => p.id === event.player_id);
-        if (player) {
-          state.addNotification('info', `${player.nickname} jogou uma carta`);
+        case 'card_played': {
+          const player = state.room?.players.find(p => p.id === event.player_id);
+          if (player) {
+            state.addNotification('info', `${player.nickname} jogou uma carta`);
+          }
+        
+          // 👇 adiciona a carta jogada na pilha
+          if (event.card) {
+            set(s => ({
+              playedCards: [...s.playedCards, event.card]
+            }));
+          }
+          break;
         }
-        break;
 
       case 'effect_set':
         const effectPlayer = state.room?.players.find(p => p.id === event.source_player_id);
@@ -255,10 +265,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
         break;
 
-      case 'round_reset':
-        const reason = event.reason === 'exact_hit' ? 'acerto exato' : 'punição';
-        state.addNotification('info', `Rodada reiniciada (${reason})`);
-        break;
+        case 'round_reset': {
+          const reason = event.reason === 'exact_hit' ? 'acerto exato' : 'punição';
+          state.addNotification('info', `Rodada reiniciada (${reason})`);
+          set({ playedCards: [] }); // limpa também
+          break;
+        }
 
       case 'turn_changed':
         // Atualizado automaticamente pelo room_state

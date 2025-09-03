@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 import { Star } from '@/components/animate-ui/icons/star';
 import { Bot } from '@/components/animate-ui/icons/bot';
+import { motion } from "framer-motion";
 
 // ✅ use só UMA versão do dado
 import D20BounceCard from '@/components/dice-roll-20'; // ajuste o path se salvou com outro nome
@@ -68,7 +69,7 @@ const CardComponent: React.FC<{
   small?: boolean;
 }> = ({ card, onClick, disabled = false, small = false }) => {
   const imgSrc = getCardImage(card);
-  const sizeClasses = small ? 'w-8' : 'w-32';
+  const sizeClasses = small ? 'w-16' : 'w-40';
 
   return (
     <button
@@ -134,7 +135,6 @@ const PlayerComponent: React.FC<{
 
 const Room: React.FC = () => {
   const {
-    room,
     selfHand,
     startGame,
     playCard,
@@ -146,6 +146,9 @@ const Room: React.FC = () => {
     showChat
   } = useGameStore();
 
+  const room = useGameStore(s => s.room);
+  const playedCards = useGameStore(s => s.playedCards);
+
   const isMyTurn = useIsMyTurn();
   const isHost = useIsHost();
   const selfPlayer = useSelfPlayer();
@@ -156,6 +159,12 @@ const Room: React.FC = () => {
   // ====== Dado (overlay) ======
   const [showDice, setShowDice] = useState(false);
   const [rollTrigger, setRollTrigger] = useState(0);
+
+  const [showNumber, setShowNumber] = useState(false);
+
+  useEffect(() => {
+    setShowNumber(false);
+  }, [rollTrigger]);
 
   // Abre/rola automaticamente quando o backend atualiza o round_limit
   useEffect(() => {
@@ -296,7 +305,7 @@ const Room: React.FC = () => {
               ))}
             </CardContent>
           </Card>
-          <Card className="p-2 flex justify-centerh-30 w-full">
+          <Card className="p-2 flex justify-center h-30 w-full">
             <CardContent className="flex h-fit gap-2">
               <Card className="flex flex-row-reverse justify-between p-3 bg-[#FFD700] h-24 w-1/4">
                 <Label className="justify-center text-4xl text-black font-bold">{room.accumulated_sum}</Label>
@@ -304,7 +313,7 @@ const Room: React.FC = () => {
               </Card>
               <Card className="flex flex-row-reverse justify-between p-3 bg-black h-24 w-1/4">
                 <Label className="justify-center text-4xl font-bold">{room.deck_count}</Label>
-                <Label className="justify-center text-sm text-black/70">Cartas no Baralho</Label>
+                <Label className="justify-center text-sm text-withe/70">Cartas no Baralho</Label>
               </Card>
               <Card className="bg-black h-24 flex flex-row-reverse p-3 justify-center items-center w-1/4">
                 <Label className="flex justify-center items-center gap-2 text-lg">
@@ -321,11 +330,11 @@ const Room: React.FC = () => {
                   )}
                 </Label>
               </Card>
-              <Card className='bg-black w-1/4 h-24 flex flex-row-reverse justify-center p-3'>
+              <Card className='flex flex-row-reverse justify-center p-3 bg-black border border-[#FFD700] h-24 w-1/4'>
                 {room.pending_effect && (
-                  <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
-                    <div className="text-yellow-200 text-sm">
-                      Efeito pendente: {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
+                  <div className="flex justify-between text-sm text-withe/70">
+                    <div className="flex justify-center text-4xl font-bold items-center text-[#FFD700]">
+                      {room.pending_effect.multiplier ? `x${room.pending_effect.multiplier}` : ''}
                       {room.pending_effect.add ? `+${room.pending_effect.add}` : ''}
                     </div>
                   </div>
@@ -339,95 +348,139 @@ const Room: React.FC = () => {
         </div>
 
         {/* Painel lateral com o limite da rodada (sem renderizar o dado aqui) */}
-        <Card className='w-1/4 p-3 flex flex-col gap-2'>
-          <div className="inset-0 z-[60] flex items-center h-[100%] justify-center backdrop-blur-sm">
+        <Card className='relative w-1/4 p-3 flex flex-col gap-2'>
+          <div className="relative z-auto inset-0 z-[60] flex items-center h-[100%] justify-center backdrop-blur-sm">
             <D20BounceCard
               targetValue={room.round_limit}
               externalTrigger={rollTrigger}
               interactive={false}
               onRevealed={() => {
-                // espera 1.2s depois que o número aparece e fecha
+                setShowNumber(true);
                 setTimeout(() => setShowDice(false), 1200);
               }}
             />
+
+            {showNumber && (
+              <div
+                className="stack absolute font-bold flex w-full text-[#FFD700]"
+                style={{ "--stacks": 3 } as React.CSSProperties}
+              >
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} style={{ "--index": i } as React.CSSProperties}>
+                    {room.round_limit}
+                  </span>
+
+                ))}
+              </div>
+            )}
           </div>
 
         </Card>
-      </div>
+      </div >
 
       {/* Painel de status */}
 
 
       {/* Cartas do jogador */}
-      {room.game_started && selfHand.length > 0 && (
-        <Card className="flex p-6">
-          <CardContent className="flex justify-between items-center mb-4">
-            <CardTitle className="text-lg font-semibold">Suas Cartas</CardTitle>
-            {isMyTurn && (
-              <div className="flex space-x-2">
-                <span className="text-green-400 font-medium">Sua vez!</span>
-                <button
-                  onClick={passTurn}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
-                >
-                  Passar Turno
-                </button>
-              </div>
-            )}
-          </CardContent>
+      {
+        room.game_started && selfHand.length > 0 && (
+          <Card className="flex flex-row p-2 h-130">
+            <div className="flex flex-col items-start w-1/2">
+              <CardTitle className="text-lg font-semibold">Suas Cartas</CardTitle>
+              {isMyTurn && (
+                <div className="flex space-x-2">
+                  <span className="text-green-400 font-medium">Sua vez!</span>
+                  <button
+                    onClick={passTurn}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                  >
+                    Passar Turno
+                  </button>
+                </div>
+              )}
 
-          <CardContent className="grid grid-cols-4 gap-3 justify-center">
-            {selfHand.map((card) => (
-              <CardComponent
-                key={card.id}
-                card={card}
-                onClick={() => handleCardClick(card)}
-                disabled={!canPlayCard(card)}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      )}
+              <Card className="grid grid-cols-4 md:grid-cols-7 p-3 mt-4 w-fit h-fit items-start">
+                {selfHand.map((card) => (
+                  <CardComponent
+                    key={card.id}
+                    card={card} small
+                    onClick={() => handleCardClick(card)}
+                    disabled={!canPlayCard(card)}
+                    
+                  />
+                ))}
+              </Card>
+            </div>
+            <Card className='h-full w-1/2 p-3'>
+      <CardTitle className="text-lg font-semibold ">Mesa</CardTitle>
+
+      <div className="relative w-full h-full flex items-center justify-center">
+        {playedCards.length === 0 ? (
+          <div className="text-gray-400 text-sm">
+            Nenhuma carta jogada ainda...
+          </div>
+        ) : (
+          playedCards.map((card, index) => (
+            <div
+              key={card.id}
+              className="absolute"
+              style={{
+                transform: `translate(${index * 3}px, ${index * 3}px) rotate(${(index % 5) - 2}deg)`,
+                zIndex: index,
+              }}
+            >
+              <CardComponent card={card} />
+            </div>
+          ))
+        )}
+      </div>
+    </Card>
+
+          </Card>
+        )
+      }
 
       {/* Modal para joker */}
-      {selectedCard && selectedCard.kind === 'joker' && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Escolha o valor do Joker</h3>
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              {Array.from({ length: 10 }, (_, i) => (
+      {
+        selectedCard && selectedCard.kind === 'joker' && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4">
+              <h3 className="text-lg font-semibold mb-4">Escolha o valor do Joker</h3>
+              <div className="grid grid-cols-5 gap-2 mb-4">
+                {Array.from({ length: 10 }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setJokerValue(i)}
+                    className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                      }`}
+                  >
+                    {i}
+                  </button>
+                ))}
+              </div>
+              <div className="flex space-x-2">
                 <button
-                  key={i}
-                  onClick={() => setJokerValue(i)}
-                  className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                    }`}
+                  onClick={handleJokerPlay}
+                  disabled={room.accumulated_sum + jokerValue > room.round_limit}
+                  className="flex-1 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {i}
+                  Jogar como {jokerValue}
                 </button>
-              ))}
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={handleJokerPlay}
-                disabled={room.accumulated_sum + jokerValue > room.round_limit}
-                className="flex-1 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Jogar como {jokerValue}
-              </button>
-              <button
-                onClick={() => setSelectedCard(null)}
-                className="flex-1 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                Cancelar
-              </button>
+                <button
+                  onClick={() => setSelectedCard(null)}
+                  className="flex-1 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* 🎲 Overlay do D20 (automático) */}
 
-    </div>
+    </div >
   );
 };
 

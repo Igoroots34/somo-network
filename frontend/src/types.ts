@@ -212,7 +212,9 @@ export interface GameState {
   nickname: string;
   roomId: string;
 
-  selfId: string
+  selfId: string;
+
+  playedCards: CardComp[];
 }
 
 export interface ChatMessage {
