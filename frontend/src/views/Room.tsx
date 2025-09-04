@@ -17,7 +17,7 @@ import card6Image from '@/assets/cards/6.png';
 import card7Image from '@/assets/cards/7.png';
 import card8Image from '@/assets/cards/8.png';
 import card9Image from '@/assets/cards/9.png';
-import { RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5 } from 'lucide-react';
+import { RotateCcw, RotateCw, Cpu, MessageCircle, MessageCircleOff, X, Dice5, ArrowBigRight } from 'lucide-react';
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -86,6 +86,8 @@ const CardComponent: React.FC<{
   );
 };
 
+
+
 // Componente para mostrar um jogador
 const PlayerComponent: React.FC<{
   player: any;
@@ -146,8 +148,28 @@ const Room: React.FC = () => {
     showChat
   } = useGameStore();
 
+  
+
   const room = useGameStore(s => s.room);
   const playedCards = useGameStore(s => s.playedCards);
+
+  {playedCards.map((card, index) => (
+    <motion.div
+      key={card.id}
+      initial={{ y: -200, rotate: -20, opacity: 0 }} // começa vindo de cima
+      animate={{
+        x: index * 5,
+        y: index * 5,
+        rotate: (index % 20) - 4,
+        opacity: 1,
+      }}
+      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+      className="absolute"
+      style={{ zIndex: index }}
+    >
+      <CardComponent card={card} />
+    </motion.div>
+  ))}
 
   const isMyTurn = useIsMyTurn();
   const isHost = useIsHost();
@@ -384,57 +406,55 @@ const Room: React.FC = () => {
       {/* Cartas do jogador */}
       {
         room.game_started && selfHand.length > 0 && (
-          <Card className="flex flex-row p-2 h-130">
+          <Card className="flex flex-row p-4 h-130">
             <div className="flex flex-col items-start w-1/2">
               <CardTitle className="text-lg font-semibold">Suas Cartas</CardTitle>
               {isMyTurn && (
-                <div className="flex space-x-2">
-                  <span className="text-green-400 font-medium">Sua vez!</span>
-                  <button
+                <div className="flex py-2 w-full justify-around items-center">
+                  <span className="text-green-400 font-medium uppercase">Sua vez!</span>
+                  <Button
                     onClick={passTurn}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                    className="bg-red-800 text-white rounded-lg hover:bg-red-900 transition-colors text-sm"
                   >
-                    Passar Turno
-                  </button>
+                    Passar Turno <ArrowBigRight size={18} />
+                  </Button>
                 </div>
               )}
 
-              <Card className="grid grid-cols-4 md:grid-cols-7 p-3 mt-4 w-fit h-fit items-start">
+              <Card className="grid grid-cols-4 md:grid-cols-7 p-3 mt-4 w-fit h-fit items-start ">
                 {selfHand.map((card) => (
-                  <CardComponent
+                  <div
                     key={card.id}
-                    card={card} small
                     onClick={() => handleCardClick(card)}
-                    disabled={!canPlayCard(card)}
-                    
-                  />
+
+                    className='hover:motion-safe:animate-pulse'
+                  >
+                    <CardComponent card={card} small disabled={!canPlayCard(card)} />
+                  </div>
                 ))}
               </Card>
             </div>
             <Card className='h-full w-1/2 p-3'>
-      <CardTitle className="text-lg font-semibold ">Mesa</CardTitle>
+              <CardTitle className="text-lg font-semibold ">Mesa</CardTitle>
 
-      <div className="relative w-full h-full flex items-center justify-center">
-        {playedCards.length === 0 ? (
-          <div className="text-gray-400 text-sm">
-            Nenhuma carta jogada ainda...
-          </div>
-        ) : (
-          playedCards.map((card, index) => (
-            <div
-              key={card.id}
-              className="absolute"
-              style={{
-                transform: `translate(${index * 3}px, ${index * 3}px) rotate(${(index % 5) - 2}deg)`,
-                zIndex: index,
-              }}
-            >
-              <CardComponent card={card} />
-            </div>
-          ))
-        )}
-      </div>
-    </Card>
+              <div className="relative w-full h-full flex items-center justify-center">
+              {playedCards.map((card, index) => (
+  <div
+    key={card.id}
+    className="absolute animate-[dropCard_0.6s_ease-out_forwards]"
+    style={{
+      "--x": `${index * 5}px`,
+      "--y": `${index * 5}px`,
+      "--r": `${(index % 20) - 4}deg`,
+      zIndex: index,
+    } as React.CSSProperties}
+  >
+    <CardComponent card={card} />
+  </div>
+))}
+
+              </div>
+            </Card>
 
           </Card>
         )
@@ -444,14 +464,14 @@ const Room: React.FC = () => {
       {
         selectedCard && selectedCard.kind === 'joker' && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4">
+            <Card className="bg-black rounded-2xl p-6 max-w-sm w-full mx-4">
               <h3 className="text-lg font-semibold mb-4">Escolha o valor do Joker</h3>
               <div className="grid grid-cols-5 gap-2 mb-4">
                 {Array.from({ length: 10 }, (_, i) => (
                   <button
                     key={i}
                     onClick={() => setJokerValue(i)}
-                    className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    className={`w-12 h-12 rounded-lg font-bold transition-colors ${jokerValue === i ? 'bg-[#FFD700] hover:bg-[#FFD700]/80 text-black' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                       }`}
                   >
                     {i}
@@ -462,7 +482,7 @@ const Room: React.FC = () => {
                 <button
                   onClick={handleJokerPlay}
                   disabled={room.accumulated_sum + jokerValue > room.round_limit}
-                  className="flex-1 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 py-2 bg-[#FFD700] text-black rounded-lg hover:bg-[#FFD700]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Jogar como {jokerValue}
                 </button>
@@ -473,7 +493,7 @@ const Room: React.FC = () => {
                   Cancelar
                 </button>
               </div>
-            </div>
+            </Card>
           </div>
         )
       }

@@ -177,3 +177,15 @@
     }
     4%, 100% {  text-shadow: none; transform: none; }
   }
+
+  @keyframes dropCard {
+    0% {
+      transform: translateY(-200px) rotate(-20deg);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(var(--x), var(--y)) rotate(var(--r));
+      opacity: 1;
+    }
+  }
+  

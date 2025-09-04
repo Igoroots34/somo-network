@@ -4,6 +4,7 @@ from ..models import RoomState, PlayerState, CardComp, CardKind
 from .state import GameStateManager
 from .rules import GameEngine
 import uuid
+import time
 
 class BotStrategy:
     """Classe base para estratégias de bot"""
@@ -263,17 +264,13 @@ class BotManager:
     
     def get_bot_action(self, room: RoomState, bot_player: PlayerState) -> Optional[Dict[str, Any]]:
         """
-        Obtém a próxima ação de um bot
-        
-        Args:
-            room: Estado da sala
-            bot_player: Estado do bot
-            
-        Returns:
-            Dicionário com a ação escolhida ou None
+        Obtém a próxima ação de um bot com delay aleatório (5–10s)
         """
         if not bot_player.is_bot:
             return None
+        
+        # Simula tempo de "pensar"
+        time.sleep(random.randint(5, 10))
         
         # Determina a dificuldade baseada no nickname
         difficulty = "LOW"  # padrão
